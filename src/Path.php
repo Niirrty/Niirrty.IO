@@ -164,12 +164,16 @@ class Path
     */
    public static function RemoveWorkingDir( string $path ) : string
    {
+
       if ( \is_null( $path ) )
       {
          return '';
       }
-      $wd = '~^' . \preg_quote( static::Unixize( \getcwd() ) . '/' ) . '~';
+
+      $wd = '~^' . \preg_quote( static::Unixize( \getcwd() ) . '/', '~' ) . '~';
+
       return \preg_replace( $wd, '', static::Unixize( $path ) );
+
    }
 
    /**
