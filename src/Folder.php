@@ -261,9 +261,9 @@ class Folder
    {
 
       // Init the array that should contain the resulting file paths
-      $files = array();
+      $files = [];
 
-      if ( \is_dir( $folder ) )
+      if ( ! @\is_dir( $folder ) )
       {
          // No folder = we are done here
          return $files;
