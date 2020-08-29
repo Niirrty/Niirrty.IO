@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  ©2017, Niirrty
+ * @copyright  © 2017-2020, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.1.0
+ * @version    0.3.0
  */
 
 
@@ -25,139 +25,137 @@ class FileAccessException extends IOException
 {
 
 
-   # <editor-fold desc="= = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
+    # <editor-fold desc="= = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
 
-   /**
-    * Reading file access.
-    */
-   public const ACCESS_READ = 'read';
+    /**
+     * Reading file access.
+     */
+    public const ACCESS_READ = 'read';
 
-   /**
-    * Writing file access.
-    */
-   public const ACCESS_WRITE = 'write';
+    /**
+     * Writing file access.
+     */
+    public const ACCESS_WRITE = 'write';
 
-   /**
-    * Reading and writing file access.
-    */
-   public const ACCESS_READWRITE = 'read and write';
+    /**
+     * Reading and writing file access.
+     */
+    public const ACCESS_READWRITE = 'read and write';
 
-   /**
-    * Creating file access.
-    */
-   public const ACCESS_CREATE = 'create';
+    /**
+     * Creating file access.
+     */
+    public const ACCESS_CREATE = 'create';
 
-   /**
-    * Deleting file access.
-    */
-   public const ACCESS_DELETE = 'delete';
+    /**
+     * Deleting file access.
+     */
+    public const ACCESS_DELETE = 'delete';
 
-   # </editor-fold>
-
-
-   # <editor-fold desc="= = =   P R I V A T E   F I E L D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
-
-   private $access;
-
-   # </editor-fold>
+    # </editor-fold>
 
 
-   # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
+    # <editor-fold desc="= = =   P R I V A T E   F I E L D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
 
-   /**
-    * Init's a new instance.
-    *
-    * @param string     $file     The file where accessing fails
-    * @param string     $access   The access type (see \UK\IO\FileAccessException::ACCESS_* class constants)
-    * @param string     $message  The optional error message
-    * @param integer    $code     A optional error code (Defaults to \E_USER_ERROR)
-    * @param \Throwable $previous A Optional previous exception.
-    */
-   public function __construct(
-      string $file, string $access = self::ACCESS_READ, string $message = null, int $code = 256,
-      \Throwable $previous = null )
-   {
+    private $access;
 
-      parent::__construct(
-         $file,
-         \sprintf( 'Could not %s file.', $access ) . static::appendMessage( $message ),
-         $code,
-         $previous
-      );
-
-      $this->access = $access;
-
-   }
-
-   # </editor-fold>
+    # </editor-fold>
 
 
-   # <editor-fold desc="= = =   G E T T E R S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
+    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
 
-   /**
-    * Returns the error file access type (see \UK\IO\FileAccessException::ACCESS_* class costants)
-    *
-    * @return string
-    */
-   public final function getAccessType() : string
-   {
-      return $this->access;
-   }
+    /**
+     * Init's a new instance.
+     *
+     * @param string $file The file where accessing fails
+     * @param string $access The access type (see \UK\IO\FileAccessException::ACCESS_* class constants)
+     * @param string $message The optional error message
+     * @param integer $code A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable $previous A Optional previous exception.
+     */
+    public function __construct(
+        string $file, string $access = self::ACCESS_READ, string $message = null, int $code = 256,
+        \Throwable $previous = null)
+    {
 
-   # </editor-fold>
+        parent::__construct(
+            $file,
+            \sprintf('Could not %s file.', $access) . static::appendMessage($message),
+            $code,
+            $previous
+        );
+
+        $this->access = $access;
+
+    }
+
+    # </editor-fold>
 
 
-   # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
+    # <editor-fold desc="= = =   G E T T E R S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
 
-   /**
-    * Init's a new \Niirrty\IO\FileAccessException for file read mode.
-    *
-    * @param  string     $file     The file where reading fails.
-    * @param  string     $message  The optional error message.
-    * @param  integer    $code     A optional error code (Defaults to \E_USER_ERROR)
-    * @param  \Throwable $previous A Optional previous exception.
-    * @return \Niirrty\IO\FileAccessException
-    */
-   public static function Read(
-      string $file, string $message = null, int $code = \E_USER_ERROR, \Throwable $previous = null )
-   : FileAccessException
-   {
+    /**
+     * Returns the error file access type (see \UK\IO\FileAccessException::ACCESS_* class costants)
+     *
+     * @return string
+     */
+    public final function getAccessType(): string
+    {
+        return $this->access;
+    }
 
-      return new FileAccessException (
-         $file,
-         FileAccessException::ACCESS_READ,
-         $message,
-         $code,
-         $previous
-      );
+    # </editor-fold>
 
-   }
 
-   /**
-    * Init's a new \UK\IO\FileAccessException for file write mode.
-    *
-    * @param  string     $file     The file where reading fails.
-    * @param  string     $message  The optional error message.
-    * @param  integer    $code     A optional error code (Defaults to \E_USER_ERROR)
-    * @param  \Throwable $previous A Optional previous exception.
-    * @return \Niirrty\IO\FileAccessException
-    */
-   public static function Write(
-      string $file, string $message = null, int $code = \E_USER_ERROR, \Throwable $previous = null )
-   : FileAccessException
-   {
+    # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
 
-      return new FileAccessException (
-         $file,
-         FileAccessException::ACCESS_WRITE,
-         $message,
-         $code,
-         $previous
-      );
+    /**
+     * Init's a new \Niirrty\IO\FileAccessException for file read mode.
+     *
+     * @param string $file The file where reading fails.
+     * @param string $message The optional error message.
+     * @param integer $code A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable $previous A Optional previous exception.
+     * @return FileAccessException
+     */
+    public static function Read(
+        string $file, string $message = null, int $code = \E_USER_ERROR, \Throwable $previous = null): FileAccessException
+    {
 
-   }
+        return new FileAccessException (
+            $file,
+            FileAccessException::ACCESS_READ,
+            $message,
+            $code,
+            $previous
+        );
 
-   # </editor-fold>
+    }
+
+    /**
+     * Init's a new \UK\IO\FileAccessException for file write mode.
+     *
+     * @param string $file The file where reading fails.
+     * @param string $message The optional error message.
+     * @param integer $code A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable $previous A Optional previous exception.
+     * @return FileAccessException
+     */
+    public static function Write(
+        string $file, string $message = null, int $code = \E_USER_ERROR, \Throwable $previous = null): FileAccessException
+    {
+
+        return new FileAccessException (
+            $file,
+            FileAccessException::ACCESS_WRITE,
+            $message,
+            $code,
+            $previous
+        );
+
+    }
+
+    # </editor-fold>
 
 
 }

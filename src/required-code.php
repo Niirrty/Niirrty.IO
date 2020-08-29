@@ -1,8 +1,8 @@
 <?php
 
 
-if ( ! \defined( 'IS_WIN' ) )
+if ( !\defined( 'IS_WIN' ) )
 {
-    define('IS_WIN', '\\' === DIRECTORY_SEPARATOR);
+    define( 'IS_WIN', '\\' === DIRECTORY_SEPARATOR );
 }
 
