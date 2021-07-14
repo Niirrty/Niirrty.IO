@@ -7,8 +7,8 @@ inside the `composer.json`:
 ```json
 {
    "require": {
-      "php": ">=7.1",
-      "niirrty/niirrty.io": "~0.3"
+      "php": ">=8.0",
+      "niirrty/niirrty.io": "~0.4"
    }
 }
 ```

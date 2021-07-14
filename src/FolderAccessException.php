@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Niirrty
+ * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -25,8 +25,7 @@ class FolderAccessException extends IOException
 {
 
 
-    # <editor-fold desc="= = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
-
+    #region // = = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Reading folder access.
@@ -53,30 +52,23 @@ class FolderAccessException extends IOException
      */
     const ACCESS_DELETE = 'delete';
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P R I V A T E   F I E L D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
-
-    private $access;
-
-    # </editor-fold>
-
-
-    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
+    #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Inits a new instance.
      *
-     * @param string     $folder   The folder where accessing fails.
-     * @param string     $access   The access type (see \UK\IO\FolderAccessException::ACCESS_* class constants)
-     * @param string     $message  The optional error message
-     * @param integer    $code     A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable $previous A Optional previous exception.
+     * @param string          $folder   The folder where accessing fails.
+     * @param string          $access   The access type (see \UK\IO\FolderAccessException::ACCESS_* class constants)
+     * @param string|null     $message  The optional error message
+     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous A Optional previous exception.
      */
     public function __construct(
-        string $folder, string $access = self::ACCESS_READ, string $message = null,
-        int $code = 256, \Throwable $previous = null )
+        string $folder, private string $access = self::ACCESS_READ, ?string $message = null,
+        int $code = 256, ?\Throwable $previous = null )
     {
 
         parent::__construct(
@@ -85,12 +77,13 @@ class FolderAccessException extends IOException
             $code,
             $previous
         );
+
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   M E T H O D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   M E T H O D S   - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /**
      * Returns the error folder access type (see \Niirrty\IO\FolderAccessException::ACCESS_* class constants)
@@ -103,24 +96,23 @@ class FolderAccessException extends IOException
         return $this->access;
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   S T A T I C   M E T H O D S   - - - - - - - - - - - - - - - - - -
 
     /**
      * Inits a new \Niirrty\IO\FolderAccessException for folder read mode.
      *
-     * @param string     $folder   The folder where reading fails.
-     * @param string     $message  The optional error message.
-     * @param integer    $code     A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable $previous A Optional previous exception.
-     *
-     * @return \Niirrty\IO\FolderAccessException
+     * @param string          $folder   The folder where reading fails.
+     * @param string|null     $message  The optional error message.
+     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous A Optional previous exception.
+     * @return FolderAccessException
      */
     public static function Read(
-        string $folder, string $message = null, int $code = \E_USER_ERROR,
-        \Throwable $previous = null ): FolderAccessException
+        string $folder, ?string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
+    : FolderAccessException
     {
 
         return new FolderAccessException (
@@ -130,21 +122,21 @@ class FolderAccessException extends IOException
             $code,
             $previous
         );
+
     }
 
     /**
-     * Inits a new \UK\IO\FolderAccessException for folder write mode.
+     * Inits a new \Niirrty\IO\FolderAccessException for folder write mode.
      *
-     * @param string     $folder   The folder where reading fails.
-     * @param string     $message  The optional error message.
-     * @param integer    $code     A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable $previous A Optional previous exception.
-     *
-     * @return \Niirrty\IO\FolderAccessException
+     * @param string          $folder   The folder where reading fails.
+     * @param string|null     $message  The optional error message.
+     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous A Optional previous exception.
+     * @return FolderAccessException
      */
     public static function Write(
-        string $folder, string $message = null, int $code = \E_USER_ERROR,
-        \Throwable $previous = null ): FolderAccessException
+        string $folder, ?string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
+    : FolderAccessException
     {
 
         return new FolderAccessException (
@@ -154,10 +146,10 @@ class FolderAccessException extends IOException
             $code,
             $previous
         );
+
     }
 
-
-    # </editor-fold>
+    #endregion
 
 
 }

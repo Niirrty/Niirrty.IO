@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Niirrty
+ * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -12,10 +12,6 @@ declare( strict_types=1 );
 
 
 namespace Niirrty\IO;
-
-
-use function Niirrty\strContains;
-use function Niirrty\strStartsWith;
 
 
 /**
@@ -27,18 +23,17 @@ class Folder
 {
 
 
-    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
-
+    #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Inits a new instance.
      */
     private function __construct() { }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   S T A T I C   M E T H O D S   - - - - - - - - - - - - - - - - - -
 
     /**
      * Goes the count of $upLevel up inside the defined folder. Each level up goes 1 level up to the parent folder.
@@ -53,7 +48,7 @@ class Folder
      *
      * @return string
      */
-    public static function Up( string $folder, int $upLevel = 1, $endChar = '' ): string
+    public static function Up( string $folder, int $upLevel = 1, string $endChar = '' ): string
     {
 
         for ( ; $upLevel > 0; --$upLevel )
@@ -78,7 +73,7 @@ class Folder
         // Remove directory separator from $folder end
         $folder = \rtrim( $folder, '\\/' );
 
-        if ( strContains( $folder, '/' ) && strContains( $folder, '\\' ) )
+        if ( \str_contains( $folder, '/' ) && \str_contains( $folder, '\\' ) )
         {
             // Uses mixed directory separators, normalize it
             if ( \DIRECTORY_SEPARATOR == '\\' )
@@ -165,7 +160,8 @@ class Folder
 
         try
         {
-            if ( \DIRECTORY_SEPARATOR == '\\' )
+            $res = \mkdir( $folder, $mode, true );
+            /** /if ( \DIRECTORY_SEPARATOR == '\\' )
             {
                 // Windows = do not use the mode
                 $res = \mkdir( $folder, null, true );
@@ -174,7 +170,7 @@ class Folder
             {
                 // All other use the mode flag
                 $res = \mkdir( $folder, $mode, true );
-            }
+            }/**/
         }
         catch ( \Throwable $ex )
         {
@@ -329,12 +325,12 @@ class Folder
      * - string $itemPath THe absolute path of the item.
      *
      * @param string          $folder    The folder
-     * @param string|callback $filter    Regex or callback|callable for filtering files
+     * @param callable|string $filter    Regex or callback|callable for filtering files
      * @param boolean         $recursive Include sub folders? (Defaults to FALSE)
      *
      * @return array
      */
-    public static function ListFilteredFiles( string $folder, $filter, bool $recursive = false ): array
+    public static function ListFilteredFiles( string $folder, callable|string $filter, bool $recursive = false ): array
     {
 
         // Init the array that should contain the resulting file paths
@@ -380,10 +376,7 @@ class Folder
                     }
                     $files[] = $tmp;
                 }
-                catch ( \Exception $ex )
-                {
-                    $ex = null;
-                }
+                catch ( \Exception ) { }
             }
             $d->close();
 
@@ -490,7 +483,7 @@ class Folder
         // The next lines does not handle some /../ inside the folder
 
         // Remove all leading ../ or ..\
-        while ( strStartsWith( $folder, '..' . \DIRECTORY_SEPARATOR ) )
+        while ( \str_starts_with( $folder, '..' . \DIRECTORY_SEPARATOR ) )
         {
             $basePath = \dirname( $basePath );
             $folder = \substr( $folder, 3 );
@@ -628,20 +621,20 @@ class Folder
     /**
      * Zips all folder contents to defined ZIP archive.
      *
-     * @param string  $sourceFolder The folder to zip
-     * @param string  $zipFile      The ZIP archive destination file
-     * @param string  $zFolderName  If you will zip it inside a special folder inside the archive, name the folder here.
-     * @param boolean $overwrite    Overwrite the archive if it exists? (Defaults to TRUE)
+     * @param string      $sourceFolder The folder to zip
+     * @param string      $zipFile      The ZIP archive destination file
+     * @param string|null $zFolderName  If you will zip it inside a special folder inside the archive, name the folder here.
+     * @param boolean     $overwrite    Overwrite the archive if it exists? (Defaults to TRUE)
      *
      * @throws FileAlreadyExistsException If the ZIP exists, and overwriting is disabled.
-     * @throws IOException                  In all other error cases, while ZIP writing.
+     * @throws FileNotFoundException
+     * @throws IOException In all other error cases, while ZIP writing.
      */
     public static function Zip(
-        string $sourceFolder, string $zipFile, string $zFolderName = null, bool $overwrite = true )
+        string $sourceFolder, string $zipFile, ?string $zFolderName = null, bool $overwrite = true )
     {
 
         $oldFile = null;
-        $res = null;
         if ( !\class_exists( 'ZipArchive' ) )
         {
             throw new IOException(
@@ -688,10 +681,10 @@ class Folder
         $zip->close();
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P R I V A T E   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = =">
+    #region // - - -   P R I V A T E   S T A T I C   M E T H O D S   - - - - - - - - - - - - - - - - -
 
     /**
      * @param  $res
@@ -713,7 +706,7 @@ class Folder
      * @param \ZipArchive $zip
      * @param string      $zFolderName
      */
-    private static function ___zipItem( $item, $itemPath, \ZipArchive $zip, $zFolderName )
+    private static function ___zipItem( $item, string $itemPath, \ZipArchive $zip, string $zFolderName )
     {
 
         if ( \is_dir( $itemPath ) )
@@ -797,16 +790,12 @@ class Folder
                 }
                 $res[] = $tmp;
             }
-            catch ( \Exception $ex )
-            {
-                $ex = null;
-            }
+            catch ( \Exception ) { }
         }
         $d->close();
     }
 
-
-    # </editor-fold>
+    #endregion
 
 
 }

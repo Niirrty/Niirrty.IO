@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Niirrty
+ * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -14,9 +14,6 @@ declare( strict_types=1 );
 namespace Niirrty\IO;
 
 
-use function Niirrty\strStartswith;
-
-
 /**
  * This is a static helper class to handle MIME types.
  */
@@ -24,20 +21,19 @@ class MimeTypeTool
 {
 
 
-    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
-
+    #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Class is only statically accessible.
      */
     private function __construct() { }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P R I V A T E   F I E L D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P R I V A T E   S T A T I C   F I E L D S   - - - - - - - - - - - - - - - - - -
 
-    private static $mimeTypes = [
+    private static array $mimeTypes = [
         'afl'     => 'video/animaflex',
         'ai'      => 'application/postscript',
         'aif'     => 'audio/x-aiff',
@@ -208,10 +204,10 @@ class MimeTypeTool
         'zsh'     => 'text/x-script.zsh',
     ];
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   M E T H O D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   S T A T I C   M E T H O D S   - - - - - - - - - - - - - - - - - -
 
     /**
      * Returns the MIME type, associated with the defined file name extension.
@@ -258,7 +254,7 @@ class MimeTypeTool
     public static function IsImageType( string $mimeType ): bool
     {
 
-        return strStartswith( $mimeType, 'image/' );
+        return \str_starts_with( $mimeType, 'image/' );
 
     }
 
@@ -290,8 +286,7 @@ class MimeTypeTool
 
     }
 
-
-    # </editor-fold>
+    #endregion
 
 
 }

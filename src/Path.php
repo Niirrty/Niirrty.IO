@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Niirrty
+ * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -23,37 +23,36 @@ class Path
 {
 
 
-    # <editor-fold desc="= = =   P U B L I C   S T A T I C   F I E L D S   = = = = = = = = = = = = = = = = = = =">
-
+    #region // - - -   P U B L I C   S T A T I C   F I E L D S   - - - - - - - - - - - - - - - - - - -
 
     /**
      * This directory separator is not used by current system.
      *
      * @var string
      */
-    public static $NoFolderSeparator;
+    public static string $NoFolderSeparator;
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
+    #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Inits a new instance.
      */
     private function __construct() { }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   S T A T I C   M E T H O D S   - - - - - - - - - - - - - - - - - -
 
     /**
      * Combine 2 or 3 path elements to a single path and returns it.
      *
-     * @param string $basePath The base path.
-     * @param string $next1    The 2nd path part.
-     * @param string $next2    Optional 3rd path part
+     * @param string      $basePath The base path.
+     * @param string      $next1    The 2nd path part.
+     * @param string|null $next2    Optional 3rd path part
      *
      * @return string
      */
@@ -199,13 +198,13 @@ class Path
      *
      * @link http://www.php.net/manual/en/function.pathinfo.php#107461
      *
-     * @param string         $path      A filename or path, does not need to exist as a file
-     * @param integer|string $infoType  Either a PATHINFO_* constant, or a string name to return only the specified
+     * @param string              $path     A filename or path, does not need to exist as a file
+     * @param integer|string|null $infoType Either a PATHINFO_* constant, or a string name to return only the specified
      *                                  piece, allows 'filename' to work on PHP < 5.2
      *
      * @return string|array
      */
-    public static function GetPathinfo( string $path, $infoType = null )
+    public static function GetPathinfo( string $path, int|string $infoType = null ): array|string
     {
 
         $infos = [ 'dirname' => '', 'basename' => '', 'extension' => '', 'filename' => '' ];
@@ -229,28 +228,19 @@ class Path
                 $infos[ 'filename' ] = $pathinfo[ 3 ];
             }
         }
-        switch ( $infoType )
+
+        return match ( $infoType )
         {
-            case PATHINFO_DIRNAME:
-            case 'dirname':
-                return $infos[ 'dirname' ];
-            case PATHINFO_BASENAME:
-            case 'basename':
-                return $infos[ 'basename' ];
-            case PATHINFO_EXTENSION:
-            case 'extension':
-                return $infos[ 'extension' ];
-            case PATHINFO_FILENAME:
-            case 'filename':
-                return $infos[ 'filename' ];
-            default:
-                return $infos;
-        }
+            PATHINFO_DIRNAME,   'dirname'   => $infos[ 'dirname' ],
+            PATHINFO_BASENAME,  'basename'  => $infos[ 'basename' ],
+            PATHINFO_EXTENSION, 'extension' => $infos[ 'extension' ],
+            PATHINFO_FILENAME,  'filename'  => $infos[ 'filename' ],
+            default                         => $infos,
+        };
 
     }
 
-
-    # </editor-fold>
+    #endregion
 
 
 }

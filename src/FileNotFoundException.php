@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Niirrty
+ * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -25,19 +25,19 @@ class FileNotFoundException extends IOException
 {
 
 
-    # <editor-fold desc=" - - >   P U B L I C   C O N S T R U C T O R   - - - - - - - - - - - - - - - - - -">
+    #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
 
     /**
      * Init's a new instance
      *
-     * @param string     $file     The missed file.
-     * @param string     $message  The optional error message
-     * @param int        $code     The optional error code (Default to \E_USER_ERROR)
-     * @param \Throwable $previous A optional previous exception
+     * @param string          $file     The missed file.
+     * @param string|null     $message  The optional error message
+     * @param int             $code     The optional error code (Default to \E_USER_ERROR)
+     * @param \Throwable|null $previous A optional previous exception
      */
     public function __construct(
-        string $file, string $message = null, int $code = \E_USER_ERROR, \Throwable $previous = null )
+        string $file, ?string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
     {
 
         parent::__construct(
@@ -49,8 +49,8 @@ class FileNotFoundException extends IOException
 
     }
 
+    #endregion
 
-    # </editor-fold>
 
 }
 

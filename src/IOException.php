@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Niirrty
+ * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -28,28 +28,18 @@ class IOException extends NiirrtyException
 {
 
 
-    # <editor-fold desc="= = =   P R O T E C T E D   F I E L D S   = = = = = = = = = = = = = = = = = = = = = = =">"
-
-
-    /**
-     * @type string
-     */
-    protected $_path;
-
-    # </editor-fold>
-
-
-    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
+    #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Init a new instance.
      *
-     * @param string     $path     The path, associated with the error.
-     * @param string     $message  A optional error message.
-     * @param integer    $code     The optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable $previous A optional previous exception
+     * @param string          $path     The path, associated with the error.
+     * @param string|null     $message  A optional error message.
+     * @param integer         $code     The optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous A optional previous exception
      */
-    public function __construct( string $path, string $message = null, int $code = 256, \Throwable $previous = null )
+    public function __construct(
+        protected string $path, ?string $message = null, int $code = 256, ?\Throwable $previous = null )
     {
 
         parent::__construct(
@@ -58,14 +48,12 @@ class IOException extends NiirrtyException
             $previous
         );
 
-        $this->_path = $path;
-
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   G E T T E R S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   M E T H O D S   - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /**
      * Returns the path that was error depending.
@@ -75,12 +63,11 @@ class IOException extends NiirrtyException
     public final function getPath(): string
     {
 
-        return $this->_path;
+        return $this->path;
 
     }
 
-
-    # </editor-fold>
+    #endregion
 
 
 }

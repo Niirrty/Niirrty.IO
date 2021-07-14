@@ -4,7 +4,7 @@
  * @copyright  © 2017 - 2020, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -27,86 +27,40 @@ class File
 {
 
 
-    # <editor-fold desc="= = =   P R I V A T E   F I E L D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
-
-
-    /**
-     * The file path of current instance.
-     *
-     * @var string
-     */
-    private $file;
-
-    /**
-     * Access type of current file. See ::ACCESS_* class constants.
-     *
-     * @var string
-     */
-    private $access;
-
-    /**
-     * The current file pointer resource.
-     *
-     * @var resource
-     */
-    private $fp;
-
-    /**
-     * @var int
-     */
-    private $mode;
-
-    /**
-     * Is this file access an looked access?
-     *
-     * @var boolean
-     */
-    private $locked;
-
-    # </editor-fold>
-
-
-    # <editor-fold desc="= = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region = = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Reading file access.
      */
-    const ACCESS_READ = 'read';
+    public const ACCESS_READ = 'read';
 
     /**
      * Writing file access.
      */
-    const ACCESS_WRITE = 'write';
+    public const ACCESS_WRITE = 'write';
 
     /**
      * Reading and writing file access.
      */
-    const ACCESS_READWRITE = 'read and write';
+    public const ACCESS_READWRITE = 'read and write';
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
+    #region = = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =
 
     /**
-     * Init's a new instance.
+     * Init a new instance.
      *
-     * @param string   $file
-     * @param string   $access
-     * @param resource $fp
+     * @param string   $file   The file path
+     * @param string   $access Access type of current file. See ::ACCESS_* class constants.
+     * @param resource $fp     The current file pointer resource.
      * @param integer  $mode
-     * @param boolean  $locked
-     */
-    private function __construct( string $file, string $access, $fp, int $mode, bool $locked )
-    {
-
-        $this->access = $access;
-        $this->file = $file;
-        $this->fp = $fp;
-        $this->mode = $mode;
-        $this->locked = $locked;
-
-    }
+     * @param boolean  $locked Is this file access an looked access?
+     *
+     * @noinspection PhpPropertyOnlyWrittenInspection*/
+    private function __construct(
+        private string $file, private string $access, private $fp, private int $mode, private bool $locked = false ) { }
 
     /**
      * The destructor.
@@ -118,12 +72,12 @@ class File
 
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   M E T H O D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region = = =   P U B L I C   M E T H O D S   = = = = = = = = = = = = = = = = = = = = = = = = =
 
-    # <editor-fold desc="BOOLEAN METHODS">
+    #region # BOOLEAN METHODS
 
     /**
      * Returns, if currently a usable file resource is open.
@@ -134,6 +88,7 @@ class File
     {
 
         return \is_resource( $this->fp );
+
     }
 
     /**
@@ -144,11 +99,14 @@ class File
     public function hasReadAccess(): bool
     {
 
-        return $this->isOpen()
-               && (
-                   $this->access == static::ACCESS_READ
-                   || $this->access == static::ACCESS_READWRITE
-               );
+        return
+            $this->isOpen()
+            &&
+            (
+                $this->access == static::ACCESS_READ
+                ||
+                $this->access == static::ACCESS_READWRITE
+            );
 
     }
 
@@ -168,20 +126,19 @@ class File
 
     }
 
-    # </editor-fold>
+    #endregion
 
-    # <editor-fold desc="READING METHODS">
+    #region # READING METHODS
 
     /**
      * Reads the next line and returns it.
      *
      * @param boolean $removeNewlines Remove trailing line breaks? (Defaults to TRUE)
      * @param boolean $fast           Read fast without some checks? (Defaults to FALSE)
-     *
-     * @return FALSE|string               Returns the resulting line, or (boolean)FASLE if EOF is reached.
+     * @return string|bool Returns the resulting line, or (boolean)FASLE if EOF is reached.
      * @throws FileAccessException If reading is not allowed or if it fails.
      */
-    public function readLine( bool $removeNewlines = true, bool $fast = false )
+    public function readLine( bool $removeNewlines = true, bool $fast = false ): string|bool
     {
 
         if ( !$fast )
@@ -231,11 +188,10 @@ class File
      *
      * @param integer $count The count of bytes to read (Defaults to 1)
      * @param boolean $fast  Read fast without some checks? (Defaults to FALSE)
-     *
-     * @return FALSE|string               Returns the resulting string, or (boolean)FALSE if EOF is reached.
+     * @return string|bool Returns the resulting string, or (boolean)FALSE if EOF is reached.
      * @throws FileAccessException If reading is not allowed or if it fails.
      */
-    public function read( int $count = 1, bool $fast = false )
+    public function read( int $count = 1, bool $fast = false ): string|bool
     {
 
         if ( !$fast )
@@ -280,11 +236,10 @@ class File
      * Reads the next char and returns it.
      *
      * @param boolean $fast Read fast without some checks? (Defaults to FALSE)
-     *
-     * @return FALSE|string               Returns the resulting char, or (boolean)FALSE if EOF is reached.
+     * @return string|bool Returns the resulting char, or (boolean)FALSE if EOF is reached.
      * @throws FileAccessException If reading is not allowed or if it fails.
      */
-    public function readChar( bool $fast = false )
+    public function readChar( bool $fast = false ): bool|string
     {
 
         if ( !$fast )
@@ -332,10 +287,10 @@ class File
      * @param integer $maxLineLength The max allowed line length (Defaults to 1024)
      * @param boolean $fast          Read fast without some checks? (Defaults to FALSE)
      *
-     * @return array|FALSE                 Returns the resulting row, or (boolean)FALSE if EOF is reached.
+     * @return array|bool Returns the resulting row, or (boolean)FALSE if EOF is reached.
      * @throws FileAccessException If reading is not allowed or if it fails.
      */
-    public function readCsv( string $delimiter = ',', int $maxLineLength = 1024, bool $fast = false )
+    public function readCsv( string $delimiter = ',', int $maxLineLength = 1024, bool $fast = false ): bool|array
     {
 
         if ( !$fast )
@@ -378,10 +333,10 @@ class File
      * @param boolean $removeNewlines Remove line breaks if $getLines is TRUE? (Default=TRUE)
      * @param boolean $fast           Read fast without some checks? (Defaults to FALSE)
      *
-     * @return array|string|FALSE
+     * @return array|string|bool
      * @throws FileAccessException If reading is not allowed or if it fails.
      */
-    public function readToEnd( bool $getLines = false, bool $removeNewlines = true, bool $fast = false )
+    public function readToEnd( bool $getLines = false, bool $removeNewlines = true, bool $fast = false ): bool|array|string
     {
 
         if ( !$fast )
@@ -421,9 +376,9 @@ class File
 
     }
 
-    # </editor-fold>
+    #endregion
 
-    # <editor-fold desc="WRITING METHODS">
+    #region # WRITING METHODS
 
     /**
      * Writes a a string to current file, with a trailing linebreak.
@@ -491,14 +446,14 @@ class File
     /**
      * Writes a a string or lines array to current file.
      *
-     * @param mixed   $strOrArray The string to write, or a lines array to write.
+     * @param string|array $strOrArray The string to write, or a lines array to write.
      * @param string  $newline    Use this linebreak (Default=\n)
      * @param boolean $fast       Write fast without some checks? (Defaults to FALSE)
      *
      * @return boolean
      * @throws FileAccessException If writing is not allowed or if it fails.
      */
-    public function write( $strOrArray, string $newline = "\n", bool $fast = false ): bool
+    public function write( string|array $strOrArray, string $newline = "\n", bool $fast = false ): bool
     {
 
         if ( !$fast )
@@ -609,19 +564,19 @@ class File
 
     }
 
-    # </editor-fold>
+    #endregion
 
-    # <editor-fold desc="PointerPosition">
+    #region # PointerPosition
 
     /**
      * Returns the position of the current file pointer.
      *
-     * @return integer|FALSE If there is no usable pointer, FALSE is returned
+     * @return int|bool If there is no usable pointer, FALSE is returned
      */
-    public function getPointerPosition()
+    public function getPointerPosition(): bool|int
     {
 
-        if ( !\is_resource( $this->fp ) )
+        if ( ! \is_resource( $this->fp ) )
         {
             return false;
         }
@@ -666,7 +621,7 @@ class File
 
     }
 
-    # </editor-fold>
+    #endregion
 
     /**
      * Closes the current file pointer.
@@ -674,7 +629,7 @@ class File
     public function close()
     {
 
-        if ( !\is_resource( $this->fp ) )
+        if ( ! \is_resource( $this->fp ) )
         {
             return;
         }
@@ -706,12 +661,12 @@ class File
 
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
+    #region = = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =
 
-    # <editor-fold desc="P U B L I C   S T A T I C   I N S T A N C E   M E T H O D S">
+    #region # P U B L I C   S T A T I C   I N S T A N C E   M E T H O D S
 
     /**
      * Creates a new file and returns the associated {@see \Niirrty\IO\File} instance.
@@ -729,7 +684,7 @@ class File
      * @throws FileAccessException        On errors while opening the file pointer
      */
     public static function CreateNew(
-        string $file, bool $overwrite = true, bool $lock = false, bool $lockExclusive = false, $mode = 0755 ): File
+        string $file, bool $overwrite = true, bool $lock = false, bool $lockExclusive = false, int $mode = 0755 ): File
     {
 
         if ( \file_exists( $file ) )
@@ -787,7 +742,7 @@ class File
      * @throws FileAlreadyExistsException
      */
     public static function OpenForAppend(
-        string $file, bool $lock = false, bool $lockExclusive = false, $mode = 0755 ): File
+        string $file, bool $lock = false, bool $lockExclusive = false, int $mode = 0755 ): File
     {
 
         if ( !\file_exists( $file ) )
@@ -865,9 +820,9 @@ class File
 
     }
 
-    # </editor-fold>
+    #endregion
 
-    # <editor-fold desc="Create + Delete + Move + Copy + ReadFirstBytes">
+    #region # Create + Delete + Move + Copy + ReadFirstBytes
 
     /**
      * Creates a new file with the defined content.
@@ -877,12 +832,12 @@ class File
      * @param string       $file      The path of the file to create.
      * @param integer      $mode      The file access mode (only used by unixoids) (default=0750)
      * @param boolean      $overwrite Overwrite the file if it exists? (default=TRUE)
-     * @param string|array $contents  The contents of the file (string or lines array) (default='')
+     * @param array|string $contents  The contents of the file (string or lines array) (default='')
      *
      * @throws FileAlreadyExistsException If file exists and overwriting is disabled.
      * @throws FileAccessException        On errors while opening the file pointer
      */
-    public static function Create( string $file, $mode = 0750, bool $overwrite = true, $contents = '' )
+    public static function Create( string $file, int $mode = 0750, bool $overwrite = true, array|string $contents = '' )
     {
 
         $f = File::CreateNew( $file, $overwrite, true, true, $mode );
@@ -917,16 +872,14 @@ class File
                 return;
             }
         }
-        catch ( \Throwable $ex )
-        {
-        }
+        catch ( \Throwable ) { }
 
         if ( '\\' === DIRECTORY_SEPARATOR )
         {
             $f = \escapeshellarg( $file );
             try
             {
-                \exec( "del {$f}" );
+                \exec( "del $f" );
             }
             catch ( \Throwable $ex )
             {
@@ -946,7 +899,7 @@ class File
 
         try
         {
-            \exec( "unlink {$file}" );
+            \exec( "unlink $file" );
         }
         catch ( \Throwable $ex )
         {
@@ -1032,32 +985,29 @@ class File
                 throw new \Exception();
             }
         }
-        catch ( \Throwable $ex )
+        catch ( \Throwable )
         {
-            $ex = null;
             try
             {
                 $return_var = 1;
+                \ob_start();
                 if ( '\\' === DIRECTORY_SEPARATOR )
                 {
-                    \ob_start();
                     \exec(
                         "copy /Y /B \"{$sourceFile}\" \"{$targetFile}\" 2>&1",
                         $output,
                         $return_var
                     );
-                    \ob_end_clean();
                 }
                 else
                 {
-                    \ob_start();
                     \exec(
                         "cp {$sourceFile} {$targetFile} 2>&1",
                         $output,
                         $return_var
                     );
-                    \ob_end_clean();
                 }
+                \ob_end_clean();
                 if ( 0 !== $return_var )
                 {
                     throw new IOException( $sourceFile, $output[ 0 ] );
@@ -1095,33 +1045,31 @@ class File
 
             return $res;
         }
-        catch ( \Throwable $ex )
-        {
-            $ex = null;
-        }
+        catch ( \Throwable ) { }
 
         return '';
 
     }
 
-    # </editor-fold>
+    #endregion
 
-    # <editor-fold desc="Zip + ZipList  + UnZip">
+    #region # Zip + ZipList  + UnZip
 
     /**
      * Compresses the defined source file to defined ZIP archive file.
      *
-     * @param string $sourceFile This file will be compressed by the zip archive
-     * @param string $zipFile    The target/destination ZIP file. (will be created or overwrite a existing)
-     * @param string $workingDir A optional working folder. (Usual its the folder, containing the $sourceFile)
-     *
+     * @param string      $sourceFile This file will be compressed by the zip archive
+     * @param string      $zipFile    The target/destination ZIP file. (will be created or overwrite a existing)
+     * @param string|null $workingDir A optional working folder. (Usual its the folder, containing the $sourceFile)
      * @throws FileAccessException If creating the ZIP file fails.
+     * @throws FileAlreadyExistsException
+     * @throws FileNotFoundException
      * @throws IOException
      */
-    public static function Zip( string $sourceFile, string $zipFile, string $workingDir = null )
+    public static function Zip( string $sourceFile, string $zipFile, ?string $workingDir = null )
     {
 
-        if ( !\class_exists( '\\ZipArchive' ) )
+        if ( ! \class_exists( '\\ZipArchive' ) )
         {
             throw new IOException(
                 $sourceFile,
@@ -1261,14 +1209,16 @@ class File
      * If $sourceFiles is a associative array, the keys representing the file names, used inside the
      * archive, and the values are the real paths to the existing files.
      *
-     * @param array  $sourceFiles   The files to compress
-     * @param string $zipFile       The target/destination ZIP file. (will be created or overwrite a existing)
-     * @param string $zipFolderName Optional folder name, used inside the ZIP file, if one is required.
+     * @param array       $sourceFiles   The files to compress
+     * @param string      $zipFile       The target/destination ZIP file. (will be created or overwrite a existing)
+     * @param string|null $zipFolderName Optional folder name, used inside the ZIP file, if one is required.
      *
      * @throws FileAccessException If creating the ZIP file fails.
+     * @throws FileAlreadyExistsException
+     * @throws FileNotFoundException
      * @throws IOException
      */
-    public static function ZipList( array $sourceFiles, string $zipFile, string $zipFolderName = null )
+    public static function ZipList( array $sourceFiles, string $zipFile, ?string $zipFolderName = null )
     {
 
         if ( !\class_exists( '\\ZipArchive' ) )
@@ -1465,32 +1415,24 @@ class File
     public static function GetZipArchiveError( int $code ): string
     {
 
-        switch ( $code )
+        return match ( $code )
         {
-            case \ZipArchive::ER_COMPNOTSUPP:
-                return 'Zip-Component is not supported.';
-            case \ZipArchive::ER_CRC:
-                return 'a CRC-Error is thrown.';
-            case \ZipArchive::ER_INCONS:
-                return 'it results in a inconsistent zip-archive.';
-            case \ZipArchive::ER_INTERNAL:
-                return 'a internal error (unknown error) is thrown.';
-            case \ZipArchive::ER_MEMORY:
-                return 'zip-creation needs memory more than usable memory size.';
-            case \ZipArchive::ER_OPEN:
-                return 'open the archive results in a error.';
-            case \ZipArchive::ER_WRITE:
-                return 'writing into archive results in a error.';
-            case \ZipArchive::ER_ZLIB:
-                return 'a ZLib error (unknown message) is thrown.';
-            default:
-                return 'a unknown error is thrown.';
-        }
+            \ZipArchive::ER_COMPNOTSUPP => 'Zip-Component is not supported.',
+            \ZipArchive::ER_CRC         => 'a CRC-Error is thrown.',
+            \ZipArchive::ER_INCONS      => 'it results in a inconsistent zip-archive.',
+            \ZipArchive::ER_INTERNAL    => 'a internal error (unknown error) is thrown.',
+            \ZipArchive::ER_MEMORY      => 'zip-creation needs memory more than usable memory size.',
+            \ZipArchive::ER_OPEN        => 'open the archive results in a error.',
+            \ZipArchive::ER_WRITE       => 'writing into archive results in a error.',
+            \ZipArchive::ER_ZLIB        => 'a ZLib error (unknown message) is thrown.',
+            default                     => 'a unknown error is thrown.',
+        };
+
     }
 
-    # </editor-fold>
+    #endregion
 
-    # <editor-fold desc="GetExtension + GetExtensionName + GetNameWithoutExtension + ChangeExtension">
+    #region # GetExtension + GetExtensionName + GetNameWithoutExtension + ChangeExtension
 
     /**
      * Returns the file name extension, including the leading dot, for defined file name/path.
@@ -1498,10 +1440,9 @@ class File
      * @param string  $file            The file name/path.
      * @param boolean $doubleExtension If you require extensions, including also a single dot like '.abc.def'
      *                                 you have to set this parameter to TRUE.
-     *
-     * @return string|FALSE Returns the file name extension NOT including the leading dot or FALSE if not extension.
+     * @return string|bool Returns the file name extension NOT including the leading dot or FALSE if not extension.
      */
-    public static function GetExtension( string $file, bool $doubleExtension = false )
+    public static function GetExtension( string $file, bool $doubleExtension = false ): string|bool
     {
 
         // In case the path is a URL, strip any query string before getting extension
@@ -1542,13 +1483,16 @@ class File
      * @param string  $file            The file name/path.
      * @param boolean $doubleExtension If you require extensions, including also a single dot like '.abc.def'
      *                                 you have to set this parameter to TRUE.
-     *
-     * @return string|FALSE Returns the file name extension NOT including the leading dot or FALSE if not extension.
+     * @return string|bool Returns the file name extension NOT including the leading dot or FALSE if not extension.
      */
-    public static function GetExtensionName( string $file, bool $doubleExtension = false )
+    public static function GetExtensionName( string $file, bool $doubleExtension = false ): bool|string
     {
 
-        return \ltrim( static::GetExtension( $file, $doubleExtension ), '.' );
+        if ( false === ( $ext = static::GetExtension( $file, $doubleExtension ) ) )
+        {
+            return $ext;
+        }
+        return \ltrim( $ext, '.' );
 
     }
 
@@ -1561,7 +1505,7 @@ class File
      *
      * @return string|bool Name or bool FALSE.
      */
-    public static function GetNameWithoutExtension( string $file, bool $doubleExtension = false )
+    public static function GetNameWithoutExtension( string $file, bool $doubleExtension = false ): bool|string
     {
 
         if ( false === ( $ext = static::GetExtension( $file, $doubleExtension ) ) )
@@ -1599,16 +1543,16 @@ class File
 
         if ( $handle && \file_exists( $file ) )
         {
-            static::Move( $file, $result, true );
+            static::Move( $file, $result );
         }
 
         return $result;
 
     }
 
-    # </editor-fold>
+    #endregion
 
-    # </editor-fold>
+    #endregion
 
 
 }

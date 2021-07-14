@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2020, Niirrty
+ * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.3.0
+ * @version    0.4.0
  */
 
 
@@ -25,7 +25,7 @@ class FileAccessException extends IOException
 {
 
 
-    # <editor-fold desc="= = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region // = = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Reading file access.
@@ -52,30 +52,23 @@ class FileAccessException extends IOException
      */
     public const ACCESS_DELETE = 'delete';
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P R I V A T E   F I E L D S   = = = = = = = = = = = = = = = = = = = = = = = = =">
-
-    private $access;
-
-    # </editor-fold>
-
-
-    # <editor-fold desc="= = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =">
+    #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Init's a new instance.
      *
-     * @param string $file The file where accessing fails
-     * @param string $access The access type (see \UK\IO\FileAccessException::ACCESS_* class constants)
-     * @param string $message The optional error message
-     * @param integer $code A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable $previous A Optional previous exception.
+     * @param string          $file     The file where accessing fails
+     * @param string          $access   The access type (see \UK\IO\FileAccessException::ACCESS_* class constants)
+     * @param string|null     $message  The optional error message
+     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous A Optional previous exception.
      */
     public function __construct(
-        string $file, string $access = self::ACCESS_READ, string $message = null, int $code = 256,
-        \Throwable $previous = null)
+        string $file, private string $access = self::ACCESS_READ, ?string $message = null, int $code = 256,
+        ?\Throwable $previous = null )
     {
 
         parent::__construct(
@@ -85,14 +78,12 @@ class FileAccessException extends IOException
             $previous
         );
 
-        $this->access = $access;
-
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   G E T T E R S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   M E T H O D S   - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /**
      * Returns the error file access type (see \UK\IO\FileAccessException::ACCESS_* class costants)
@@ -104,22 +95,24 @@ class FileAccessException extends IOException
         return $this->access;
     }
 
-    # </editor-fold>
+    #endregion
 
 
-    # <editor-fold desc="= = =   P U B L I C   S T A T I C   M E T H O D S   = = = = = = = = = = = = = = = = = =">
+    #region // - - -   P U B L I C   S T A T I C   M E T H O D S   - - - - - - - - - - - - - - - - - -
 
     /**
-     * Init's a new \Niirrty\IO\FileAccessException for file read mode.
+     * Init a new \Niirrty\IO\FileAccessException for file read mode.
      *
-     * @param string $file The file where reading fails.
-     * @param string $message The optional error message.
-     * @param integer $code A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable $previous A Optional previous exception.
+     * @param string          $file     The file where reading fails.
+     * @param string|null     $message  The optional error message.
+     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous A Optional previous exception.
+     *
      * @return FileAccessException
      */
     public static function Read(
-        string $file, string $message = null, int $code = \E_USER_ERROR, \Throwable $previous = null): FileAccessException
+        string $file, string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
+    : FileAccessException
     {
 
         return new FileAccessException (
@@ -133,16 +126,18 @@ class FileAccessException extends IOException
     }
 
     /**
-     * Init's a new \UK\IO\FileAccessException for file write mode.
+     * Init a new \UK\IO\FileAccessException for file write mode.
      *
-     * @param string $file The file where reading fails.
-     * @param string $message The optional error message.
-     * @param integer $code A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable $previous A Optional previous exception.
+     * @param string          $file     The file where reading fails.
+     * @param string|null     $message  The optional error message.
+     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous A Optional previous exception.
+     *
      * @return FileAccessException
      */
     public static function Write(
-        string $file, string $message = null, int $code = \E_USER_ERROR, \Throwable $previous = null): FileAccessException
+        string $file, string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
+    : FileAccessException
     {
 
         return new FileAccessException (
@@ -155,7 +150,7 @@ class FileAccessException extends IOException
 
     }
 
-    # </editor-fold>
+    #endregion
 
 
 }
