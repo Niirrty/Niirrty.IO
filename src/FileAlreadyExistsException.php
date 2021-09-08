@@ -4,7 +4,7 @@
  * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.4.0
+ * @version    0.5.0
  */
 
 
@@ -32,11 +32,11 @@ class FileAlreadyExistsException extends IOException
      *
      * @param string          $file     The already existing file
      * @param string|null     $message  The optional error message
-     * @param integer         $code     The optional error code (Default to \E_USER_ERROR)
+     * @param string|int      $code     The optional error code (Default to \E_USER_ERROR)
      * @param \Throwable|null $previous A optional previous exception
      */
     public function __construct(
-        string $file, ?string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null)
+        string $file, ?string $message = null, string|int $code = \E_USER_ERROR, ?\Throwable $previous = null)
     {
 
         parent::__construct(

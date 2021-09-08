@@ -4,7 +4,7 @@
  * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.4.0
+ * @version    0.5.0
  */
 
 
@@ -63,12 +63,12 @@ class FolderAccessException extends IOException
      * @param string          $folder   The folder where accessing fails.
      * @param string          $access   The access type (see \UK\IO\FolderAccessException::ACCESS_* class constants)
      * @param string|null     $message  The optional error message
-     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param string|int      $code     A optional error code (Defaults to \E_USER_ERROR)
      * @param \Throwable|null $previous A Optional previous exception.
      */
     public function __construct(
         string $folder, private string $access = self::ACCESS_READ, ?string $message = null,
-        int $code = 256, ?\Throwable $previous = null )
+        string|int $code = 256, ?\Throwable $previous = null )
     {
 
         parent::__construct(

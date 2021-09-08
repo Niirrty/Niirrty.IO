@@ -4,7 +4,7 @@
  * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.4.0
+ * @version    0.5.0
  */
 
 
@@ -35,11 +35,11 @@ class IOException extends NiirrtyException
      *
      * @param string          $path     The path, associated with the error.
      * @param string|null     $message  A optional error message.
-     * @param integer         $code     The optional error code (Defaults to \E_USER_ERROR)
+     * @param string|int      $code     The optional error code (Defaults to \E_USER_ERROR)
      * @param \Throwable|null $previous A optional previous exception
      */
     public function __construct(
-        protected string $path, ?string $message = null, int $code = 256, ?\Throwable $previous = null )
+        protected string $path, ?string $message = null, string|int $code = 256, ?\Throwable $previous = null )
     {
 
         parent::__construct(

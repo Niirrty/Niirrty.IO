@@ -4,7 +4,7 @@
  * @copyright  © 2017-2021, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.4.0
+ * @version    0.5.0
  */
 
 
@@ -75,6 +75,34 @@ class Path
             . \DIRECTORY_SEPARATOR
             . \ltrim( $next2, "\r\n\t /\\" )
         );
+    }
+
+    /**
+     * Combine 2 or more path elements to a single path and returns it.
+     *
+     * @param string $basePath     The base path.
+     * @param string ...$pathParts
+     *
+     * @return string
+     * @example <code>
+     * $path = Path::CombineMany( __DIR__, 'foo', 'bar', 'readme.md' );
+     * </code>
+     */
+    public static function CombineMany( string $basePath, string ...$pathParts ): string
+    {
+
+        $result = \rtrim( $basePath, "\r\n\t /\\" );
+
+        for ( $i = 0, $c = \count( $pathParts ); $i < $c; $i++ )
+        {
+            $result .= \DIRECTORY_SEPARATOR;
+            $result .= ( $i === $c - 1 )
+                       ? \ltrim( $pathParts[ $i ], "\r\n\t /\\" )
+                       : \trim( $pathParts[ $i ], "\r\n\t /\\" );
+        }
+
+        return $result;
+
     }
 
     /**
@@ -209,21 +237,21 @@ class Path
 
         $infos = [ 'dirname' => '', 'basename' => '', 'extension' => '', 'filename' => '' ];
         $pathinfo = [];
-        if ( preg_match( '%^(.*?)[\\\\/]*(([^/\\\\]*?)(\.([^.\\\\/]+?)|))[\\\\/.]*$%im', $path, $pathinfo ) )
+        if ( \preg_match( '%^(.*?)[\\\\/]*(([^/\\\\]*?)(\.([^.\\\\/]+?)|))[\\\\/.]*$%im', $path, $pathinfo ) )
         {
-            if ( array_key_exists( 1, $pathinfo ) )
+            if ( \array_key_exists( 1, $pathinfo ) )
             {
                 $infos[ 'dirname' ] = $pathinfo[ 1 ];
             }
-            if ( array_key_exists( 2, $pathinfo ) )
+            if ( \array_key_exists( 2, $pathinfo ) )
             {
                 $infos[ 'basename' ] = $pathinfo[ 2 ];
             }
-            if ( array_key_exists( 5, $pathinfo ) )
+            if ( \array_key_exists( 5, $pathinfo ) )
             {
                 $infos[ 'extension' ] = $pathinfo[ 5 ];
             }
-            if ( array_key_exists( 3, $pathinfo ) )
+            if ( \array_key_exists( 3, $pathinfo ) )
             {
                 $infos[ 'filename' ] = $pathinfo[ 3 ];
             }

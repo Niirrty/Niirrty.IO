@@ -14,8 +14,7 @@
    ],
    "require": {
       "php": ">=8.0",
-      "niirrty/niirrty.core": "~0.4",
-      "ext-zip": "*"
+      "niirrty/niirrty.core": "~0.5"
    },
    "autoload": {
       "files": [

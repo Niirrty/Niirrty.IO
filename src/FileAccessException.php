@@ -63,11 +63,11 @@ class FileAccessException extends IOException
      * @param string          $file     The file where accessing fails
      * @param string          $access   The access type (see \UK\IO\FileAccessException::ACCESS_* class constants)
      * @param string|null     $message  The optional error message
-     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
+     * @param string|int      $code     A optional error code (Defaults to \E_USER_ERROR)
      * @param \Throwable|null $previous A Optional previous exception.
      */
     public function __construct(
-        string $file, private string $access = self::ACCESS_READ, ?string $message = null, int $code = 256,
+        string $file, private string $access = self::ACCESS_READ, ?string $message = null, string|int $code = 256,
         ?\Throwable $previous = null )
     {
 

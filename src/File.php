@@ -4,7 +4,8 @@
  * @copyright  © 2017 - 2020, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.4.0
+ * @version    0.5.0
+ * @noinspection PhpComposerExtensionStubsInspection
  */
 
 
@@ -77,7 +78,7 @@ class File
 
     #region = = =   P U B L I C   M E T H O D S   = = = = = = = = = = = = = = = = = = = = = = = = =
 
-    #region # BOOLEAN METHODS
+    #region # CHECKING METHODS
 
     /**
      * Returns, if currently a usable file resource is open.
@@ -640,7 +641,7 @@ class File
         if ( $this->access == static::ACCESS_WRITE || $this->access == static::ACCESS_READWRITE )
         {
 
-            if ( !\is_null( $this->mode ) && '\\' !== DIRECTORY_SEPARATOR )
+            if ( ! \is_null( $this->mode ) && '\\' !== DIRECTORY_SEPARATOR )
             {
                 \chmod( $this->file, $this->mode );
             }

@@ -5,6 +5,7 @@
  * @package    Niirrty\IO
  * @since      2017-11-01
  * @version    0.4.0
+ * @noinspection PhpComposerExtensionStubsInspection
  */
 
 
@@ -57,6 +58,7 @@ class Folder
         }
 
         return $folder . $endChar;
+
     }
 
     /**
@@ -207,7 +209,7 @@ class Folder
     public static function Delete( string $folder, bool $clear = false )
     {
 
-        if ( empty( $folder ) && !\is_dir( $folder ) )
+        if ( empty( $folder ) && ! \is_dir( $folder ) )
         {
             // No folder = we are done here
             return;
@@ -226,7 +228,7 @@ class Folder
         {
             // The absolute item path
             $path = $folder . $item;
-            if ( !\is_dir( $path ) )
+            if ( ! \is_dir( $path ) )
             {
                 // $path is a file
                 File::Delete( $path );
@@ -317,12 +319,12 @@ class Folder
     /**
      * Returns all files, matching the defined filter.
      *
-     * If $recursive is TRUE, it also includes al sub folders.
+     * If $recursive is TRUE, it also includes all sub folders.
      *
      * If the filter is a callback function/method, so it must accept 2 parameters.
      *
      * - string $itemName The name of the current filter item
-     * - string $itemPath THe absolute path of the item.
+     * - string $itemPath The absolute path of the item.
      *
      * @param string          $folder    The folder
      * @param callable|string $filter    Regex or callback|callable for filtering files
@@ -336,13 +338,13 @@ class Folder
         // Init the array that should contain the resulting file paths
         $files = [];
 
-        if ( !\is_dir( $folder ) )
+        if ( ! \is_dir( $folder ) )
         {
             // No folder = we are done here
             return $files;
         }
 
-        if ( !$recursive )
+        if ( ! $recursive )
         {
             // List only files directly contained inside $folder (none from sub folders)
 
@@ -356,7 +358,7 @@ class Folder
                     continue;
                 }
                 $tmp = Path::Combine( $folder, $entry );
-                if ( !\is_file( $tmp ) )
+                if ( ! \is_file( $tmp ) )
                 {
                     continue;
                 }
@@ -370,7 +372,7 @@ class Folder
                 }
                 try
                 {
-                    if ( !\preg_match( $filter, $entry ) )
+                    if ( ! \preg_match( $filter, $entry ) )
                     {
                         continue;
                     }
@@ -635,7 +637,7 @@ class Folder
     {
 
         $oldFile = null;
-        if ( !\class_exists( 'ZipArchive' ) )
+        if ( ! \class_exists( 'ZipArchive' ) )
         {
             throw new IOException(
                 $sourceFolder,
@@ -644,7 +646,7 @@ class Folder
         }
         if ( \file_exists( $zipFile ) )
         {
-            if ( !$overwrite )
+            if ( ! $overwrite )
             {
                 throw new FileAlreadyExistsException(
                     $zipFile,
@@ -698,6 +700,7 @@ class Folder
         throw new IOException(
             $zipFile,
             'Zipfile could not be created cause ' . File::GetZipArchiveError( $res ) );
+
     }
 
     /**
