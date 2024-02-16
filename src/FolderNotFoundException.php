@@ -17,7 +17,7 @@ namespace Niirrty\IO;
 /**
  * This exception should be used if a required folder not exists.
  *
- * The class extends from {@see \Niirrty\IO\IOException}.
+ * The class extends from {@see IOException}.
  *
  * @since v0.1
  */
@@ -34,7 +34,7 @@ class FolderNotFoundException extends IOException
      * @param string          $folder   The missed folder.
      * @param string|null     $message  The optional error message
      * @param string|int      $code     The optional error code (Default to \E_USER_ERROR)
-     * @param \Throwable|null $previous A optional previous exception
+     * @param \Throwable|null $previous optional previous exception
      */
     public function __construct(
         string $folder, ?string $message = null, string|int $code = \E_USER_ERROR, ?\Throwable $previous = null )

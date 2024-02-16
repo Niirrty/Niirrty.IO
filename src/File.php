@@ -19,7 +19,7 @@ namespace Niirrty\IO;
  * This class defines an object for simple handling file in OOP manner. It also gives you some
  * static methods for file handling.
  *
- * A instance can only be created by static {@see \Niirrty\IO\File::CreateNew} and {@see \Niirrty\IO\File::OpenRead}
+ * A instance can only be created by static {@see File::CreateNew} and {@see File::OpenRead}
  * methods.
  *
  * @since      v0.1
@@ -33,17 +33,17 @@ class File
     /**
      * Reading file access.
      */
-    public const ACCESS_READ = 'read';
+    public final const ACCESS_READ = 'read';
 
     /**
      * Writing file access.
      */
-    public const ACCESS_WRITE = 'write';
+    public final const ACCESS_WRITE = 'write';
 
     /**
      * Reading and writing file access.
      */
-    public const ACCESS_READWRITE = 'read and write';
+    public final const ACCESS_READWRITE = 'read and write';
 
     #endregion
 
@@ -61,7 +61,8 @@ class File
      *
      * @noinspection PhpPropertyOnlyWrittenInspection*/
     private function __construct(
-        private string $file, private string $access, private $fp, private int $mode, private bool $locked = false ) { }
+        private readonly string $file, private readonly string $access, private $fp, private readonly int $mode,
+        private readonly bool   $locked = false ) { }
 
     /**
      * The destructor.
@@ -437,7 +438,7 @@ class File
      *
      * @throws FileAccessException If writing is not allowed or if it fails.
      */
-    public function writeLineFast( string $str, string $newline = "\n" )
+    public function writeLineFast( string $str, string $newline = "\n" ) : void
     {
 
         $this->writeLine( $str, $newline, true );
@@ -510,7 +511,7 @@ class File
      *
      * @throws FileAccessException If writing is not allowed or if it fails.
      */
-    public function writeChars( string $chars, bool $fast = true )
+    public function writeChars( string $chars, bool $fast = true ) : void
     {
 
         $this->write( $chars, '', $fast );
@@ -627,7 +628,7 @@ class File
     /**
      * Closes the current file pointer.
      */
-    public function close()
+    public function close() : void
     {
 
         if ( ! \is_resource( $this->fp ) )
@@ -670,9 +671,9 @@ class File
     #region # P U B L I C   S T A T I C   I N S T A N C E   M E T H O D S
 
     /**
-     * Creates a new file and returns the associated {@see \Niirrty\IO\File} instance.
+     * Creates a new file and returns the associated {@see File} instance.
      *
-     * If $overwrite is FALSE and the file already exists, a {@see \Niirrty\IO\FileAlreadyExistsException} is thrown.
+     * If $overwrite is FALSE and the file already exists, a {@see FileAlreadyExistsException} is thrown.
      *
      * @param string  $file          The path of the file to create.
      * @param boolean $overwrite     Overwrite the file if it exists? (default=TRUE)
@@ -731,7 +732,7 @@ class File
 
     /**
      * Opens a existing file for writing and sets the file pointer to the end of the file and
-     * returns the associated {@see \Niirrty\IO\File} instance. If the file does not exist it will be created.
+     * returns the associated {@see File} instance. If the file does not exist it will be created.
      *
      * @param string  $file          The path of the file to open or create.
      * @param boolean $lock          Use file locking? (default=FALSE)
@@ -776,7 +777,7 @@ class File
     }
 
     /**
-     * Opens a existing file for reading and returns the associated {@see \Niirrty\IO\File} instance.
+     * Opens a existing file for reading and returns the associated {@see File} instance.
      *
      * @param string  $file          The path of the file to read.
      * @param boolean $lock          Use file locking? (default=FALSE)
@@ -828,7 +829,7 @@ class File
     /**
      * Creates a new file with the defined content.
      *
-     * If $overwrite is FALSE and the file already exists, a {@see \Niirrty\IO\FileAlreadyExistsException} is thrown.
+     * If $overwrite is FALSE and the file already exists, a {@see FileAlreadyExistsException} is thrown.
      *
      * @param string       $file      The path of the file to create.
      * @param integer      $mode      The file access mode (only used by unixoids) (default=0750)
@@ -838,7 +839,7 @@ class File
      * @throws FileAlreadyExistsException If file exists and overwriting is disabled.
      * @throws FileAccessException        On errors while opening the file pointer
      */
-    public static function Create( string $file, int $mode = 0750, bool $overwrite = true, array|string $contents = '' )
+    public static function Create( string $file, int $mode = 0750, bool $overwrite = true, array|string $contents = '' ) : void
     {
 
         $f = File::CreateNew( $file, $overwrite, true, true, $mode );
@@ -854,7 +855,7 @@ class File
      *
      * @throws IOException
      */
-    public static function Delete( string $file )
+    public static function Delete( string $file ) : void
     {
 
         if ( !\file_exists( $file ) )
@@ -923,7 +924,7 @@ class File
      * Moves the defined file to a new location $targetFile. (Also known as renaming ;-) )
      *
      * If $replace is FALSE it only does the job if the $targetFile not exists, otherwise a
-     * {@see \Niirrty\IO\FileAlreadyExistsException} is trown.
+     * {@see FileAlreadyExistsException} is trown.
      *
      * @param string $srcFile    The file to move.
      * @param string $targetFile The target file path.
@@ -933,7 +934,7 @@ class File
      * @throws FileAlreadyExistsException If $targetFile exists and overwriting is disabled.
      * @throws IOException
      */
-    public static function Move( string $srcFile, string $targetFile, bool $replace = true )
+    public static function Move( string $srcFile, string $targetFile, bool $replace = true ) : void
     {
 
         static::Copy( $srcFile, $targetFile, $replace );
@@ -943,7 +944,7 @@ class File
 
     /**
      * Copies the source file to the target file. $targetFile will only be overwritten if $overwrite is TRUE,
-     * otherwise a {@see \Niirrty\IO\FileAlreadyExistsException} is thrown.
+     * otherwise a {@see FileAlreadyExistsException} is thrown.
      *
      * @param string $sourceFile The source file
      * @param string $targetFile The target/destination file.
@@ -953,7 +954,7 @@ class File
      * @throws FileAlreadyExistsException If $targetFile exists and overwriting is disabled.
      * @throws IOException
      */
-    public static function Copy( string $sourceFile, string $targetFile, bool $overwrite = true )
+    public static function Copy( string $sourceFile, string $targetFile, bool $overwrite = true ) : void
     {
 
         if ( !\file_exists( $sourceFile ) )
@@ -1067,7 +1068,7 @@ class File
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static function Zip( string $sourceFile, string $zipFile, ?string $workingDir = null )
+    public static function Zip( string $sourceFile, string $zipFile, ?string $workingDir = null ) : void
     {
 
         if ( ! \class_exists( '\\ZipArchive' ) )
@@ -1219,7 +1220,7 @@ class File
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static function ZipList( array $sourceFiles, string $zipFile, ?string $zipFolderName = null )
+    public static function ZipList( array $sourceFiles, string $zipFile, ?string $zipFolderName = null ) : void
     {
 
         if ( !\class_exists( '\\ZipArchive' ) )
@@ -1315,7 +1316,7 @@ class File
      * @throws FileAccessException    If reading the ZIP file fails.
      * @throws IOException
      */
-    public static function UnZip( string $zipFile, string $targetFolder, bool $clearTarget = true )
+    public static function UnZip( string $zipFile, string $targetFolder, bool $clearTarget = true ) : void
     {
 
         if ( !\class_exists( 'ZipArchive' ) )
@@ -1374,7 +1375,7 @@ class File
      * @throws FileNotFoundException If the ZIP file dont exists.
      * @throws FileAccessException
      */
-    public static function UnZipSingleFile( string $zipFile, string $zippedFileName, string $targetFile )
+    public static function UnZipSingleFile( string $zipFile, string $zippedFileName, string $targetFile ) : void
     {
 
         if ( !\file_exists( $zipFile ) )

@@ -142,7 +142,7 @@ class Folder
      *
      * @throws IOException If creation fails
      */
-    public static function Create( string $folder, int $mode = 0700 )
+    public static function Create( string $folder, int $mode = 0700 ) : void
     {
 
         if ( \is_dir( $folder ) )
@@ -206,7 +206,7 @@ class Folder
      *
      * @throws IOException
      */
-    public static function Delete( string $folder, bool $clear = false )
+    public static function Delete( string $folder, bool $clear = false ) : void
     {
 
         if ( empty( $folder ) && ! \is_dir( $folder ) )
@@ -395,41 +395,46 @@ class Folder
      * Returns the real path of the defined folder. If the folder is defined as a absolute path, its returned as it,
      * only normalized. Otherwise the $basePath is used to make the folder absolute.
      *
-     * Its no checked, if the folder or path existsa!
+     * Its no checked, if the folder or path exists!
      *
      * Examples:
      *
      * <code>
-     * echo "'" . \UK\IO\Folder::GetRealPath('../xyz', '/abc/def') . "'";
+     * echo "'" . \Niirrty\IO\Folder::GetRealPath('../xyz', '/abc/def') . "'";
      * # outputs '/abc/xyz'
-     * echo "'" . \UK\IO\Folder::GetRealPath('./xyz', '/abc/def') . "'";
+     * echo "'" . \Niirrty\IO\Folder::GetRealPath('./xyz', '/abc/def') . "'";
      * # outputs '/abc/def/xyz'
-     * echo "'" . \UK\IO\Folder::GetRealPath('/xyz', '/abc/def') . "'";
+     * echo "'" . \Niirrty\IO\Folder::GetRealPath('/xyz', '/abc/def') . "'";
      * # outputs '/xyz'
-     * echo "'" . \UK\IO\Folder::GetRealPath('C:/xyz', 'C:/abc/def') . "'";
+     * echo "'" . \Niirrty\IO\Folder::GetRealPath('C:/xyz', 'C:/abc/def') . "'";
      * # outputs 'C:/xyz'
-     * echo "'" . \UK\IO\Folder::GetRealPath('../../xyz', '/abc/def') . "'";
+     * echo "'" . \Niirrty\IO\Folder::GetRealPath('../../xyz', '/abc/def') . "'";
      * # outputs '/xyz'
      * </code>
      *
      * @param string $folder   The folder
-     * @param string $basePath The base path used if the $folder is relative. If its empty, getcwd() is used.
+     * @param string $basePath The base path used if the $folder is relative. If it's empty, getcwd() is used.
      *
      * @return string
      */
     public static function GetRealPath( string $folder, string $basePath ): string
     {
 
-        if ( \is_null( $basePath ) || \strlen( $basePath ) < 1 )
+        if ( \strlen( $basePath ) < 1 )
         {
             // If no base path is defined use path given by getcwd()
             $basePath = getcwd();
         }
 
-        // Meassure the length of $folder
+        if ( false === $basePath )
+        {
+            return '';
+        }
+
+        // Measure the length of $folder
         $flen = \strlen( $folder );
 
-        // Switch basepath to OS directory separator and remove trailing directory separators
+        // Switch base path to OS directory separator and remove trailing directory separators
         $basePath = \rtrim( Path::Normalize( $basePath ), \DIRECTORY_SEPARATOR );
 
         if ( $flen < 1 )
@@ -502,7 +507,7 @@ class Folder
      *
      * @throws IOException
      */
-    public static function Clear( string $folder )
+    public static function Clear( string $folder ) : void
     {
 
         static::Delete( $folder, true );
@@ -511,7 +516,7 @@ class Folder
     /**
      * Moves all folder path elements (files + sub folders) from $sourceFolder to $targetFolder.
      *
-     * The target folder will be created if it do'nt exists.
+     * The target folder will be created if it not exists.
      *
      * The source folder it empty after this action.
      *
@@ -521,14 +526,15 @@ class Folder
      * @param bool   $clearTarget  Clear the target folder if it has some contents (Defaults to FALSE)
      *
      * @throws IOException
-     * @uses   \Niirrty\IO\Folder::Copy() Uses internally the Copy method and clears after it the $sourceFolder
+     * @uses   Folder::Copy Uses internally the Copy method and clears after it the $sourceFolder
      */
     public static function MoveContents(
-        string $sourceFolder, string $targetFolder, int $tFolderMode = 0700, bool $clearTarget = false )
+        string $sourceFolder, string $targetFolder, int $tFolderMode = 0700, bool $clearTarget = false ) : void
     {
 
         static::Copy( $sourceFolder, $targetFolder, $tFolderMode, $clearTarget );
         static::Clear( $sourceFolder );
+
     }
 
     /**
@@ -542,11 +548,12 @@ class Folder
      * @throws IOException
      */
     public static function Move(
-        string $sourceFolder, string $targetFolder, int $tFolderMode = 0700, bool $clearTarget = false )
+        string $sourceFolder, string $targetFolder, int $tFolderMode = 0700, bool $clearTarget = false ) : void
     {
 
         static::Copy( $sourceFolder, $targetFolder, $tFolderMode, $clearTarget );
         static::Delete( $sourceFolder );
+
     }
 
     /**
@@ -560,7 +567,7 @@ class Folder
      * @throws IOException
      */
     public static function Copy(
-        string $sourceFolder, string $targetFolder, int $tFolderMode = 0700, bool $clearTarget = false )
+        string $sourceFolder, string $targetFolder, int $tFolderMode = 0700, bool $clearTarget = false ) : void
     {
 
         // Remove trailing directory seperators
@@ -633,7 +640,7 @@ class Folder
      * @throws IOException In all other error cases, while ZIP writing.
      */
     public static function Zip(
-        string $sourceFolder, string $zipFile, ?string $zFolderName = null, bool $overwrite = true )
+        string $sourceFolder, string $zipFile, ?string $zFolderName = null, bool $overwrite = true ) : void
     {
 
         $oldFile = null;
@@ -709,7 +716,7 @@ class Folder
      * @param \ZipArchive $zip
      * @param string      $zFolderName
      */
-    private static function ___zipItem( $item, string $itemPath, \ZipArchive $zip, string $zFolderName )
+    private static function ___zipItem( $item, string $itemPath, \ZipArchive $zip, string $zFolderName ) : void
     {
 
         if ( \is_dir( $itemPath ) )
@@ -737,7 +744,7 @@ class Folder
      * @param $res
      * @param $folder
      */
-    private static function _listRecursive( &$res, $folder )
+    private static function _listRecursive( &$res, $folder ) : void
     {
 
         $d = \dir( $folder );
@@ -763,7 +770,7 @@ class Folder
      * @param $filter
      * @param $folder
      */
-    private static function _listRecursiveFiltered( &$res, $filter, $folder )
+    private static function _listRecursiveFiltered( &$res, $filter, $folder ) : void
     {
 
         $d = \dir( $folder );

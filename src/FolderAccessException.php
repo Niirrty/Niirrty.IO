@@ -17,7 +17,7 @@ namespace Niirrty\IO;
 /**
  * This exception should be used if accessing a folder for reading and/or writing fails.
  *
- * The class extends from {@see \Niirrty\IO\IOException}.
+ * The class extends from {@see IOException}.
  *
  * @since v0.1
  */
@@ -63,11 +63,11 @@ class FolderAccessException extends IOException
      * @param string          $folder   The folder where accessing fails.
      * @param string          $access   The access type (see \UK\IO\FolderAccessException::ACCESS_* class constants)
      * @param string|null     $message  The optional error message
-     * @param string|int      $code     A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable|null $previous A Optional previous exception.
+     * @param string|int      $code     optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous Optional previous exception.
      */
     public function __construct(
-        string $folder, private string $access = self::ACCESS_READ, ?string $message = null,
+        string     $folder, private readonly string $access = self::ACCESS_READ, ?string $message = null,
         string|int $code = 256, ?\Throwable $previous = null )
     {
 
@@ -106,8 +106,8 @@ class FolderAccessException extends IOException
      *
      * @param string          $folder   The folder where reading fails.
      * @param string|null     $message  The optional error message.
-     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable|null $previous A Optional previous exception.
+     * @param integer         $code     optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous Optional previous exception.
      * @return FolderAccessException
      */
     public static function Read(
@@ -130,8 +130,8 @@ class FolderAccessException extends IOException
      *
      * @param string          $folder   The folder where reading fails.
      * @param string|null     $message  The optional error message.
-     * @param integer         $code     A optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable|null $previous A Optional previous exception.
+     * @param integer         $code     optional error code (Defaults to \E_USER_ERROR)
+     * @param \Throwable|null $previous Optional previous exception.
      * @return FolderAccessException
      */
     public static function Write(

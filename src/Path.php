@@ -158,7 +158,7 @@ class Path
     public static function IsAbsolute( string $path, bool $dependToOS = true ): bool
     {
 
-        if ( \is_null( $path ) || \strlen( $path ) < 1 )
+        if ( \strlen( $path ) < 1 )
         {
             return false;
         }
@@ -189,12 +189,8 @@ class Path
     public static function Unixize( string $path ): string
     {
 
-        if ( \is_null( $path ) )
-        {
-            return '';
-        }
-
         return \str_replace( '\\', '/', $path );
+
     }
 
     /**
@@ -206,11 +202,6 @@ class Path
      */
     public static function RemoveWorkingDir( string $path ): string
     {
-
-        if ( \is_null( $path ) )
-        {
-            return '';
-        }
 
         $wd = '~^' . \preg_quote( static::Unixize( \getcwd() ) . '/', '~' ) . '~';
 

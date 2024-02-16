@@ -18,9 +18,9 @@ use \Niirrty\NiirrtyException;
 
 
 /**
- * This class defines a exception, used as base exception of all IO exceptions.
+ * This class defines an exception, used as base exception to all IO exceptions.
  *
- * It extends from {@see \Niirrty\NiirrtyException}.
+ * It extends from {@see NiirrtyException}.
  *
  * @since v0.1.0
  */
@@ -34,9 +34,9 @@ class IOException extends NiirrtyException
      * Init a new instance.
      *
      * @param string          $path     The path, associated with the error.
-     * @param string|null     $message  A optional error message.
+     * @param string|null     $message  optional error message.
      * @param string|int      $code     The optional error code (Defaults to \E_USER_ERROR)
-     * @param \Throwable|null $previous A optional previous exception
+     * @param \Throwable|null $previous optional previous exception
      */
     public function __construct(
         protected string $path, ?string $message = null, string|int $code = 256, ?\Throwable $previous = null )
