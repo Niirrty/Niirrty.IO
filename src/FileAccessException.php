@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2021, Niirrty
+ * @copyright  © 2017-2026, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.4.0
+ * @version    0.6.4
  */
 
 
@@ -111,7 +111,7 @@ class FileAccessException extends IOException
      * @return FileAccessException
      */
     public static function Read(
-        string $file, string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
+        string $file, ?string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
     : FileAccessException
     {
 
@@ -136,7 +136,7 @@ class FileAccessException extends IOException
      * @return FileAccessException
      */
     public static function Write(
-        string $file, string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
+        string $file, ?string $message = null, int $code = \E_USER_ERROR, ?\Throwable $previous = null )
     : FileAccessException
     {
 

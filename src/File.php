@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017 - 2020, Niirrty
+ * @copyright  © 2017 - 2026, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.5.0
+ * @version    0.6.4
  * @noinspection PhpComposerExtensionStubsInspection
  */
 
@@ -43,7 +43,7 @@ class File
     /**
      * Reading and writing file access.
      */
-    public final const ACCESS_READWRITE = 'read and write';
+    public final const string ACCESS_READWRITE = 'read and write';
 
     #endregion
 

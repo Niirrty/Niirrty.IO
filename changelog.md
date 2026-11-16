@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.6.4 `2026-11-16`
+
+* Change dependency of Niirrty.Core v0.6 to 0.6.4
+
 ## Version 0.6.1 `2024-02-16`
 
 * Change dependency of Niirrty.Core v0.5 to 0.6
