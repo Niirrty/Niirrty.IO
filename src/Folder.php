@@ -1,11 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2021, Niirrty
+ * @copyright  © 2017-2026, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.4.0
- * @noinspection PhpComposerExtensionStubsInspection
+ * @version    0.6.4.
  */
 
 
@@ -52,10 +51,7 @@ class Folder
     public static function Up( string $folder, int $upLevel = 1, string $endChar = '' ): string
     {
 
-        for ( ; $upLevel > 0; --$upLevel )
-        {
-            $folder = \dirname( $folder );
-        }
+        $folder = \dirname( $folder, $upLevel );
 
         return $folder . $endChar;
 
@@ -97,7 +93,7 @@ class Folder
                 )
             );
 
-        for ( $i = 0; $i < $level && !\is_dir( $folder ); ++$i )
+        for ( $i = 0; $i < $level && false === \is_dir( $folder ); ++$i )
         {
             $f = \dirname( $folder );
             if ( empty( $f ) || $f == $folder )
@@ -151,7 +147,7 @@ class Folder
             return;
         }
 
-        if ( !static::CanCreate( $folder ) )
+        if ( false === static::CanCreate( $folder ) )
         {
             // No rights to create the required folder
             throw new IOException(
@@ -163,16 +159,6 @@ class Folder
         try
         {
             $res = \mkdir( $folder, $mode, true );
-            /** /if ( \DIRECTORY_SEPARATOR == '\\' )
-            {
-                // Windows = do not use the mode
-                $res = \mkdir( $folder, null, true );
-            }
-            else
-            {
-                // All other use the mode flag
-                $res = \mkdir( $folder, $mode, true );
-            }/**/
         }
         catch ( \Throwable $ex )
         {
@@ -185,7 +171,7 @@ class Folder
             );
         }
 
-        if ( !$res || !\is_dir( $folder ) )
+        if ( false === $res || false === \is_dir( $folder ) )
         {
             // Folder creation fails
             throw new IOException(
@@ -209,7 +195,7 @@ class Folder
     public static function Delete( string $folder, bool $clear = false ) : void
     {
 
-        if ( empty( $folder ) && ! \is_dir( $folder ) )
+        if ( empty( $folder ) && false === \is_dir( $folder ) )
         {
             // No folder = we are done here
             return;
@@ -228,7 +214,7 @@ class Folder
         {
             // The absolute item path
             $path = $folder . $item;
-            if ( ! \is_dir( $path ) )
+            if ( false === \is_dir( $path ) )
             {
                 // $path is a file
                 File::Delete( $path );
@@ -241,7 +227,7 @@ class Folder
         }
         \closedir( $openDir );
 
-        if ( !$clear )
+        if ( false === $clear )
         {
             // $folder should not be deleted, only emptied. We are done here
             return;
@@ -278,16 +264,15 @@ class Folder
         // Init the array that should contain the resulting file paths
         $files = [];
 
-        if ( !@\is_dir( $folder ) )
+        if ( false === @\is_dir( $folder ) )
         {
             // No folder = we are done here
             return $files;
         }
 
-        if ( !$recursive )
+        if ( false === $recursive )
         {
             // List only files directly contained inside $folder (none from sub folders)
-
             // Open the directory pointer
             $d = \dir( $folder );
             // Ignore . and ..
@@ -297,7 +282,7 @@ class Folder
             while ( false !== ( $entry = $d->read() ) )
             {
                 $tmp = Path::Combine( $folder, $entry );
-                if ( !\is_file( $tmp ) )
+                if ( false === \is_file( $tmp ) )
                 {
                     // Ignore sub folders
                     continue;
@@ -305,7 +290,6 @@ class Folder
                 $files[] = $tmp;
             }
             $d->close();
-
             return $files;
         }
 
@@ -338,13 +322,13 @@ class Folder
         // Init the array that should contain the resulting file paths
         $files = [];
 
-        if ( ! \is_dir( $folder ) )
+        if ( false === \is_dir( $folder ) )
         {
             // No folder = we are done here
             return $files;
         }
 
-        if ( ! $recursive )
+        if ( false === $recursive )
         {
             // List only files directly contained inside $folder (none from sub folders)
 
@@ -358,7 +342,7 @@ class Folder
                     continue;
                 }
                 $tmp = Path::Combine( $folder, $entry );
-                if ( ! \is_file( $tmp ) )
+                if ( false === \is_file( $tmp ) )
                 {
                     continue;
                 }
@@ -454,7 +438,7 @@ class Folder
 
         if ( $flen < 2 )
         {
-            if ( $folder == '.' )
+            if ( $folder === '.' )
             {
                 // $folder is only a dot '.'
                 return $basePath;
@@ -464,7 +448,7 @@ class Folder
             return $basePath . \DIRECTORY_SEPARATOR . \trim( $folder, \DIRECTORY_SEPARATOR );
         }
 
-        if ( $flen == 2 )
+        if ( $flen === 2 )
         {
             if ( \IS_WIN && $folder[ 1 ] == ':' )
             {
@@ -574,7 +558,7 @@ class Folder
         $sourceFolder = \rtrim( $sourceFolder, '\\/' );
         $targetFolder = \rtrim( $targetFolder, '\\/' );
 
-        if ( !\is_dir( $sourceFolder ) )
+        if ( false === \is_dir( $sourceFolder ) )
         {
             // If the source folder not exists, stop here…
             throw new IOException(
@@ -610,7 +594,7 @@ class Folder
         {
             $spath = $sourceFolder . '/' . $item;
             $tpath = $targetFolder . '/' . $item;
-            if ( !\is_dir( $spath ) )
+            if ( false === \is_dir( $spath ) )
             {
                 // Its a file, copy it
                 File::Copy( $spath, $tpath );
@@ -644,16 +628,16 @@ class Folder
     {
 
         $oldFile = null;
-        if ( ! \class_exists( 'ZipArchive' ) )
+        if ( false === \class_exists( 'ZipArchive' ) )
         {
             throw new IOException(
                 $sourceFolder,
-                '\UK\IO\Folder::Zip() fails with no ZIP-Support.'
+                '\Niirrty\IO\Folder::Zip() fails with no ZIP-Support.'
             );
         }
         if ( \file_exists( $zipFile ) )
         {
-            if ( ! $overwrite )
+            if ( false === $overwrite )
             {
                 throw new FileAlreadyExistsException(
                     $zipFile,
@@ -666,7 +650,7 @@ class Folder
         $zip = new \ZipArchive();
         if ( true !== ( $res = $zip->open( $zipFile, \ZipArchive::CREATE ) ) )
         {
-            if ( !empty( $oldFile ) )
+            if ( false === empty( $oldFile ) )
             {
                 File::Move( $oldFile, $zipFile );
             }
@@ -696,27 +680,27 @@ class Folder
     #region // - - -   P R I V A T E   S T A T I C   M E T H O D S   - - - - - - - - - - - - - - - - -
 
     /**
-     * @param  $res
-     * @param  $zipFile
+     * @param  int|bool $res
+     * @param  string $zipFile
      *
      * @throws IOException
      */
-    private static function ___handWriteError( $res, $zipFile )
+    private static function ___handWriteError( int|bool $res, string $zipFile )
     {
 
         throw new IOException(
             $zipFile,
-            'Zipfile could not be created cause ' . File::GetZipArchiveError( $res ) );
+            'Zipfile could not be created, because ' . File::GetZipArchiveError( \intval( $res ) ) );
 
     }
 
     /**
-     * @param             $item
+     * @param string      $item
      * @param string      $itemPath
      * @param \ZipArchive $zip
      * @param string      $zFolderName
      */
-    private static function ___zipItem( $item, string $itemPath, \ZipArchive $zip, string $zFolderName ) : void
+    private static function ___zipItem( string $item, string $itemPath, \ZipArchive $zip, string $zFolderName ) : void
     {
 
         if ( \is_dir( $itemPath ) )
@@ -726,7 +710,7 @@ class Folder
             $openDir = \opendir( $itemPath );
             while ( false !== ( $itm = \readdir( $openDir ) ) )
             {
-                if ( $itm == '.' || $itm == '..' )
+                if ( $itm === '.' || $itm === '..' )
                 {
                     continue;
                 }
@@ -741,10 +725,10 @@ class Folder
     }
 
     /**
-     * @param $res
-     * @param $folder
+     * @param array $res
+     * @param string $folder
      */
-    private static function _listRecursive( &$res, $folder ) : void
+    private static function _listRecursive( array &$res, string $folder ) : void
     {
 
         $d = \dir( $folder );
@@ -766,20 +750,19 @@ class Folder
     }
 
     /**
-     * @param $res
-     * @param $filter
-     * @param $folder
+     * @param array  $res
+     * @param string $filter
+     * @param string $folder
      */
-    private static function _listRecursiveFiltered( &$res, $filter, $folder ) : void
+    private static function _listRecursiveFiltered( array &$res, string $filter, string $folder ) : void
     {
-
         $d = \dir( $folder );
         $d->read();
         $d->read();
         while ( false !== ( $entry = $d->read() ) )
         {
             $tmp = Path::Combine( $folder, $entry );
-            if ( !\is_file( $tmp ) )
+            if ( false === \is_file( $tmp ) )
             {
                 static::_listRecursiveFiltered( $res, $filter, $tmp );
                 continue;
@@ -794,7 +777,7 @@ class Folder
             }
             try
             {
-                if ( !\preg_match( $filter, $entry ) )
+                if ( false === \preg_match( $filter, $entry ) )
                 {
                     continue;
                 }

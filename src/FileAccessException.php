@@ -25,55 +25,28 @@ class FileAccessException extends IOException
 {
 
 
-    #region // = = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-    /**
-     * Reading file access.
-     */
-    public final const ACCESS_READ = 'read';
-
-    /**
-     * Writing file access.
-     */
-    public final const ACCESS_WRITE = 'write';
-
-    /**
-     * Reading and writing file access.
-     */
-    public final const ACCESS_READWRITE = 'read and write';
-
-    /**
-     * Creating file access.
-     */
-    public final const ACCESS_CREATE = 'create';
-
-    /**
-     * Deleting file access.
-     */
-    public final const ACCESS_DELETE = 'delete';
-
-    #endregion
-
-
     #region // = = =   C O N S T R U C T O R   = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 
     /**
      * Init a new instance.
      *
      * @param string          $file     The file where accessing fails
-     * @param string          $access   The access type (see \UK\IO\FileAccessException::ACCESS_* class constants)
+     * @param FileAccess      $access   The access type (see FileAccess} enum
      * @param string|null     $message  The optional error message
      * @param string|int      $code     optional error code (Defaults to \E_USER_ERROR)
      * @param \Throwable|null $previous Optional previous exception.
      */
     public function __construct(
-        string      $file, private readonly string $access = self::ACCESS_READ, ?string $message = null, string|int $code = 256,
+        string      $file,
+        private readonly FileAccess $access = FileAccess::Unknown,
+        ?string $message = null,
+        string|int $code = 256,
         ?\Throwable $previous = null )
     {
 
         parent::__construct(
             $file,
-            \sprintf('Could not %s file.', $access) . static::appendMessage($message),
+            \sprintf( 'Could not %s file.', $access->toString() ) . static::appendMessage( $message ),
             $code,
             $previous
         );
@@ -86,11 +59,11 @@ class FileAccessException extends IOException
     #region // - - -   P U B L I C   M E T H O D S   - - - - - - - - - - - - - - - - - - - - - - - - -
 
     /**
-     * Returns the error file access type (see \UK\IO\FileAccessException::ACCESS_* class constants)
+     * Returns the error file access type (see {@see FileAccess} enum)
      *
-     * @return string
+     * @return FileAccess
      */
-    public final function getAccessType(): string
+    public final function getAccessType(): FileAccess
     {
         return $this->access;
     }
@@ -117,7 +90,7 @@ class FileAccessException extends IOException
 
         return new FileAccessException (
             $file,
-            FileAccessException::ACCESS_READ,
+            FileAccess::Read,
             $message,
             $code,
             $previous
@@ -142,7 +115,7 @@ class FileAccessException extends IOException
 
         return new FileAccessException (
             $file,
-            FileAccessException::ACCESS_WRITE,
+            FileAccess::Write,
             $message,
             $code,
             $previous

@@ -5,7 +5,6 @@
  * @package    Niirrty\IO
  * @since      2017-11-01
  * @version    0.6.4
- * @noinspection PhpComposerExtensionStubsInspection
  */
 
 
@@ -27,42 +26,23 @@ namespace Niirrty\IO;
 class File
 {
 
-
-    #region = = =   C O N S T A N T S   = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-
-    /**
-     * Reading file access.
-     */
-    public final const ACCESS_READ = 'read';
-
-    /**
-     * Writing file access.
-     */
-    public final const ACCESS_WRITE = 'write';
-
-    /**
-     * Reading and writing file access.
-     */
-    public final const string ACCESS_READWRITE = 'read and write';
-
-    #endregion
-
-
     #region = = =   C O N S T R U C T O R   +   D E S T R U C T O R   = = = = = = = = = = = = = = =
 
     /**
      * Init a new instance.
      *
-     * @param string   $file   The file path
-     * @param string   $access Access type of current file. See ::ACCESS_* class constants.
-     * @param resource $fp     The current file pointer resource.
-     * @param integer  $mode
-     * @param boolean  $locked Is this file access an looked access?
-     *
-     * @noinspection PhpPropertyOnlyWrittenInspection*/
+     * @param string     $file   The file path
+     * @param FileAccess $access Access type of current file. See {@see FileAccess} enum.
+     * @param resource   $fp     The current file pointer resource.
+     * @param integer    $mode
+     * @param boolean    $locked Is this file access an looked access?
+     */
     private function __construct(
-        private readonly string $file, private readonly string $access, private $fp, private readonly int $mode,
-        private readonly bool   $locked = false ) { }
+        private readonly string     $file,
+        private readonly FileAccess $access,
+        private                     $fp,
+        private readonly int        $mode,
+        private readonly bool       $locked = false ) { }
 
     /**
      * The destructor.
@@ -105,9 +85,9 @@ class File
             $this->isOpen()
             &&
             (
-                $this->access == static::ACCESS_READ
+                $this->access === FileAccess::Read
                 ||
-                $this->access == static::ACCESS_READWRITE
+                $this->access === FileAccess::ReadWrite
             );
 
     }
@@ -120,11 +100,14 @@ class File
     public function hasWriteAccess(): bool
     {
 
-        return $this->isOpen()
-               && (
-                   $this->access == static::ACCESS_WRITE
-                   || $this->access == static::ACCESS_READWRITE
-               );
+        return
+            $this->isOpen()
+            &&
+            (
+                $this->access === FileAccess::Write
+                ||
+                $this->access  === FileAccess::ReadWrite
+            );
 
     }
 
@@ -143,19 +126,12 @@ class File
     public function readLine( bool $removeNewlines = true, bool $fast = false ): string|bool
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkReadAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasReadAccess() )
-            {
-                throw FileAccessException::Read(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not read!', $this->access )
-                );
             }
         }
 
@@ -163,20 +139,20 @@ class File
         {
             if ( \feof( $this->fp ) )
             {
+                // Allready readed to EOF
                 return false;
             }
-            if ( !$removeNewlines )
+            if ( false === $removeNewlines )
             {
                 return \fgets( $this->fp );
             }
-
             return \rtrim( \fgets( $this->fp ), "\r\n" );
         }
         catch ( \Throwable $ex )
         {
             throw new FileAccessException(
                 $this->file,
-                FileAccessException::ACCESS_READ,
+                $this->access,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -196,19 +172,12 @@ class File
     public function read( int $count = 1, bool $fast = false ): string|bool
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkReadAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasReadAccess() )
-            {
-                throw FileAccessException::Read(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not read!', $this->access )
-                );
             }
         }
 
@@ -218,14 +187,13 @@ class File
             {
                 return false;
             }
-
             return \fread( $this->fp, $count );
         }
         catch ( \Throwable $ex )
         {
             throw new FileAccessException(
                 $this->file,
-                FileAccessException::ACCESS_READ,
+                $this->access,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -244,19 +212,12 @@ class File
     public function readChar( bool $fast = false ): bool|string
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkReadAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasReadAccess() )
-            {
-                throw FileAccessException::Read(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not read!', $this->access )
-                );
             }
         }
 
@@ -266,14 +227,13 @@ class File
             {
                 return false;
             }
-
             return \fgetc( $this->fp );
         }
         catch ( \Throwable $ex )
         {
             throw new FileAccessException(
                 $this->file,
-                FileAccessException::ACCESS_READ,
+                $this->access,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -295,19 +255,12 @@ class File
     public function readCsv( string $delimiter = ',', int $maxLineLength = 1024, bool $fast = false ): bool|array
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkReadAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasReadAccess() )
-            {
-                throw FileAccessException::Read(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not read!', $this->access )
-                );
             }
         }
 
@@ -319,7 +272,7 @@ class File
         {
             throw new FileAccessException(
                 $this->file,
-                FileAccessException::ACCESS_READ,
+                $this->access,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -341,19 +294,12 @@ class File
     public function readToEnd( bool $getLines = false, bool $removeNewlines = true, bool $fast = false ): bool|array|string
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkReadAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasReadAccess() )
-            {
-                throw FileAccessException::Read(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not read!', $this->access )
-                );
             }
         }
 
@@ -395,19 +341,12 @@ class File
     public function writeLine( string $str, string $newline = "\n", bool $fast = false ): bool
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkWriteAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasWriteAccess() )
-            {
-                throw FileAccessException::Write(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not write!', $this->access )
-                );
             }
         }
 
@@ -419,7 +358,7 @@ class File
         {
             throw new FileAccessException(
                 $this->file,
-                FileAccessException::ACCESS_WRITE,
+                $this->access,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -458,19 +397,12 @@ class File
     public function write( string|array $strOrArray, string $newline = "\n", bool $fast = false ): bool
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkWriteAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasWriteAccess() )
-            {
-                throw FileAccessException::Write(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not write!', $this->access )
-                );
             }
         }
 
@@ -492,7 +424,7 @@ class File
         {
             throw new FileAccessException(
                 $this->file,
-                FileAccessException::ACCESS_WRITE,
+                $this->access,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -531,19 +463,12 @@ class File
     public function writeCsv( array $dataRow, string $delimiter = ',', bool $fast = false ): bool
     {
 
-        if ( !$fast )
+        if ( false === $fast )
         {
             // No fast (insecure) access = do the required checks
-            if ( !$this->isOpen() )
+            if ( false === $this->checkWriteAccess() )
             {
                 return false;
-            }
-            if ( !$this->hasWriteAccess() )
-            {
-                throw FileAccessException::Write(
-                    $this->file,
-                    \sprintf( 'Current mode of opened file is "%s" and not write!', $this->access )
-                );
             }
         }
 
@@ -555,7 +480,7 @@ class File
         {
             throw new FileAccessException(
                 $this->file,
-                FileAccessException::ACCESS_WRITE,
+                $this->access,
                 'Writing of CSV-Data fails.',
                 \E_USER_ERROR,
                 $ex
@@ -578,7 +503,7 @@ class File
     public function getPointerPosition(): bool|int
     {
 
-        if ( ! \is_resource( $this->fp ) )
+        if ( false === \is_resource( $this->fp ) )
         {
             return false;
         }
@@ -597,7 +522,7 @@ class File
     public function setPointerPosition( int $offset = 0 ): bool
     {
 
-        if ( !\is_resource( $this->fp ) )
+        if ( false === \is_resource( $this->fp ) )
         {
             return false;
         }
@@ -614,7 +539,7 @@ class File
     public function setPointerPositionToEndOfFile(): bool
     {
 
-        if ( !\is_resource( $this->fp ) )
+        if ( false === \is_resource( $this->fp ) )
         {
             return false;
         }
@@ -631,7 +556,7 @@ class File
     public function close() : void
     {
 
-        if ( ! \is_resource( $this->fp ) )
+        if ( false === \is_resource( $this->fp ) )
         {
             return;
         }
@@ -639,10 +564,10 @@ class File
         \fclose( $this->fp );
         $this->fp = null;
 
-        if ( $this->access == static::ACCESS_WRITE || $this->access == static::ACCESS_READWRITE )
+        if ( $this->access === FileAccess::Write || $this->access === FileAccess::ReadWrite )
         {
 
-            if ( ! \is_null( $this->mode ) && '\\' !== DIRECTORY_SEPARATOR )
+            if ( false === \is_null( $this->mode ) && '\\' !== DIRECTORY_SEPARATOR )
             {
                 \chmod( $this->file, $this->mode );
             }
@@ -714,14 +639,14 @@ class File
             }
 
             // Return the new instance
-            return new File( $file, static::ACCESS_WRITE, $fp, $mode, $locked );
+            return new File( $file, FileAccess::Write, $fp, $mode, $locked );
         }
         catch ( \Throwable $ex )
         {
             // Handle catched Exceptions
             throw new FileAccessException(
                 $file,
-                FileAccessException::ACCESS_CREATE,
+                FileAccess::Create,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -761,13 +686,13 @@ class File
                 $locked = \flock( $fp, $lockExclusive ? \LOCK_EX : \LOCK_SH );
             }
 
-            return new File( $file, static::ACCESS_WRITE, $fp, $mode, $locked );
+            return new File( $file, FileAccess::Write, $fp, $mode, $locked );
         }
         catch ( \Throwable $ex )
         {
             throw new FileAccessException(
                 $file,
-                FileAccessException::ACCESS_CREATE,
+                FileAccess::Create,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -807,13 +732,13 @@ class File
                 $locked = \flock( $fp, $lockExclusive ? \LOCK_EX : \LOCK_SH );
             }
 
-            return new File( $file, File::ACCESS_READ, $fp, 0750, $locked );
+            return new File( $file, FileAccess::Read, $fp, 0750, $locked );
         }
         catch ( \Throwable $ex )
         {
             throw new FileAccessException(
                 $file,
-                FileAccessException::ACCESS_READ,
+                FileAccess::Read,
                 null,
                 \E_USER_ERROR,
                 $ex
@@ -858,7 +783,7 @@ class File
     public static function Delete( string $file ) : void
     {
 
-        if ( !\file_exists( $file ) )
+        if ( FALSE === \file_exists( $file ) )
         {
             // No deleting required
             return;
@@ -868,7 +793,7 @@ class File
         {
             \unlink( $file );
             \clearstatcache();
-            if ( !\file_exists( $file ) )
+            if ( false === \file_exists( $file ) )
             {
                 // Deleting was successful
                 return;
@@ -895,7 +820,6 @@ class File
                     'Deleting the defined file fails! No known method works.'
                 );
             }
-
             return;
         }
 
@@ -957,7 +881,7 @@ class File
     public static function Copy( string $sourceFile, string $targetFile, bool $overwrite = true ) : void
     {
 
-        if ( !\file_exists( $sourceFile ) )
+        if ( false === \file_exists( $sourceFile ) )
         {
             throw new FileNotFoundException(
                 $sourceFile,
@@ -967,7 +891,7 @@ class File
 
         if ( \file_exists( $targetFile ) )
         {
-            if ( !$overwrite )
+            if ( false === $overwrite )
             {
                 throw new FileAlreadyExistsException(
                     $targetFile,
@@ -1071,11 +995,11 @@ class File
     public static function Zip( string $sourceFile, string $zipFile, ?string $workingDir = null ) : void
     {
 
-        if ( ! \class_exists( '\\ZipArchive' ) )
+        if ( false === \class_exists( '\\ZipArchive' ) )
         {
             throw new IOException(
                 $sourceFile,
-                '\UK\IO\File::Zip() fails with no ZIP-Support.'
+                '\Niirrty\IO\File::Zip() fails with no ZIP-Support.'
             );
         }
 
@@ -1083,14 +1007,9 @@ class File
         $owd = Path::Unixize( \getcwd() );
 
         // Prepare the actual working directory
-        if ( empty( $workingDir ) )
-        {
-            $workingDir = Path::Unixize( \dirname( $sourceFile ) );
-        }
-        else
-        {
-            $workingDir = Path::Unixize( $workingDir );
-        }
+        $workingDir = empty( $workingDir )
+                    ? Path::Unixize( \dirname( $sourceFile ) )
+                    : Path::Unixize( $workingDir );
 
         if ( $workingDir == $owd )
         {
@@ -1122,7 +1041,7 @@ class File
             catch ( \Throwable $ex )
             {
                 // Renaming fails
-                if ( !\is_null( $owd ) )
+                if ( null !== $owd )
                 {
                     // Restore the original working directory
                     \chdir( $owd );
@@ -1145,33 +1064,33 @@ class File
             $zip->setArchiveComment( 'Archived Single-File' );
 
             // Close the ZIP file
-            if ( !$zip->close() )
+            if ( false === $zip->close() )
             {
                 // ZIP file closing fails
-                if ( !empty( $oldFile ) )
+                if ( false === empty( $oldFile ) )
                 {
                     // Restore the old zip file if defined
                     static::Move( $oldFile, $zipFile );
                 }
-                if ( !\is_null( $owd ) )
+                if ( null !== $owd )
                 {
                     // Restore the original working directory
                     \chdir( $owd );
                 }
                 throw new FileAccessException(
                     $zipFile,
-                    FileAccessException::ACCESS_CREATE,
+                    FileAccess::Create,
                     'Zipfile could not be created cause write could not be completed! (Closing file fails)'
                 );
             }
 
-            if ( !empty( $oldFile ) )
+            if ( false === empty( $oldFile ) )
             {
                 // Delete the old zip file if defined
                 static::Delete( $oldFile );
             }
 
-            if ( !\is_null( $owd ) )
+            if ( null !== $owd )
             {
                 // Restore the original working directory
                 \chdir( $owd );
@@ -1182,13 +1101,13 @@ class File
         {
             // Failed to open the ZIP file writer
 
-            if ( !\is_null( $owd ) )
+            if ( null !== $owd )
             {
                 // Restore the original working directory
                 \chdir( $owd );
             }
 
-            if ( !empty( $oldFile ) )
+            if ( false === empty( $oldFile ) )
             {
                 // Restore the old zip file if defined
                 static::Move( $oldFile, $zipFile );
@@ -1196,7 +1115,7 @@ class File
 
             throw new FileAccessException(
                 $zipFile,
-                FileAccessException::ACCESS_CREATE,
+                FileAccess::Create,
                 'Zipfile could not be created cause ' . static::GetZipArchiveError( $res )
             );
 
@@ -1223,11 +1142,11 @@ class File
     public static function ZipList( array $sourceFiles, string $zipFile, ?string $zipFolderName = null ) : void
     {
 
-        if ( !\class_exists( '\\ZipArchive' ) )
+        if ( false === \class_exists( '\\ZipArchive' ) )
         {
             throw new IOException(
                 $zipFile,
-                '\UK\IO\File::ZipList() fails with no ZIP-Support.'
+                '\Niirrty\IO\File::ZipList() fails with no ZIP-Support.'
             );
         }
 
@@ -1243,7 +1162,7 @@ class File
         {
             // ZIP Archive writer is opened successful
 
-            if ( !empty( $zipFolderName ) )
+            if ( false === empty( $zipFolderName ) )
             {
                 // Add a sub folder if required
                 $zip->addEmptyDir( $zipFolderName );
@@ -1271,17 +1190,17 @@ class File
                 }
             }
 
-            if ( !$zip->close() )
+            if ( false === $zip->close() )
             {
 
-                if ( !empty( $oldFile ) )
+                if ( false === empty( $oldFile ) )
                 {
                     static::Move( $oldFile, $zipFile );
                 }
 
                 throw new FileAccessException(
                     $zipFile,
-                    FileAccessException::ACCESS_CREATE,
+                    FileAccess::Create,
                     'Zipfile could not be created cause write could not be completed! (Closing file fails)'
                 );
 
@@ -1291,14 +1210,14 @@ class File
         else
         {
 
-            if ( !empty( $oldFile ) )
+            if ( false === empty( $oldFile ) )
             {
                 static::Move( $oldFile, $zipFile );
             }
 
             throw new FileAccessException(
                 $zipFile,
-                FileAccessException::ACCESS_CREATE,
+                FileAccess::Create,
                 'Zipfile could not be created cause ' . static::GetZipArchiveError( $res ) );
 
         }
@@ -1319,15 +1238,15 @@ class File
     public static function UnZip( string $zipFile, string $targetFolder, bool $clearTarget = true ) : void
     {
 
-        if ( !\class_exists( 'ZipArchive' ) )
+        if ( false === \class_exists( 'ZipArchive' ) )
         {
             throw new IOException(
                 $zipFile,
-                '\UK\IO\File::UnZip() fails with no ZIP-Support.'
+                '\Niirrty\IO\File::UnZip() fails with no ZIP-Support.'
             );
         }
 
-        if ( !\file_exists( $zipFile ) )
+        if ( false === \file_exists( $zipFile ) )
         {
             throw new FileNotFoundException(
                 $zipFile,
@@ -1349,13 +1268,13 @@ class File
         else
         {
 
-            if ( !empty( $clearTarget ) )
+            if ( false === empty( $clearTarget ) )
             {
                 Folder::Move( $targetFolder . '-tmp', $targetFolder, 0770, true );
             }
             throw new FileAccessException(
                 $zipFile,
-                FileAccessException::ACCESS_READ,
+                FileAccess::Read,
                 'Could not read from zip file cause ' . static::GetZipArchiveError( $res )
             );
 
@@ -1378,7 +1297,7 @@ class File
     public static function UnZipSingleFile( string $zipFile, string $zippedFileName, string $targetFile ) : void
     {
 
-        if ( !\file_exists( $zipFile ) )
+        if ( false === \file_exists( $zipFile ) )
         {
             throw new FileNotFoundException (
                 $zipFile,
@@ -1454,7 +1373,7 @@ class File
             $file = \substr( $file, 0, $qCharPosition );
         }
 
-        if ( !$doubleExtension )
+        if ( false === $doubleExtension )
         {
             return '.' . \ltrim( Path::GetPathinfo( $file, \PATHINFO_EXTENSION ), '.' );
         }
@@ -1487,7 +1406,7 @@ class File
      *                                 you have to set this parameter to TRUE.
      * @return string|bool Returns the file name extension NOT including the leading dot or FALSE if not extension.
      */
-    public static function GetExtensionName( string $file, bool $doubleExtension = false ): bool|string
+    public static function GetExtensionName( string $file, bool $doubleExtension = false ): string|bool
     {
 
         if ( false === ( $ext = static::GetExtension( $file, $doubleExtension ) ) )
@@ -1507,7 +1426,7 @@ class File
      *
      * @return string|bool Name or bool FALSE.
      */
-    public static function GetNameWithoutExtension( string $file, bool $doubleExtension = false ): bool|string
+    public static function GetNameWithoutExtension( string $file, bool $doubleExtension = false ): string|bool
     {
 
         if ( false === ( $ext = static::GetExtension( $file, $doubleExtension ) ) )
@@ -1536,12 +1455,12 @@ class File
         string $file, string $newExtension, bool $doubleExtension = false, bool $handle = false ): string
     {
 
-        $base = \basename( $file );
-        $folder = \substr( $file, 0, -\strlen( $base ) );
+        $base         = \basename( $file );
+        $folder       = \substr( $file, 0, -\strlen( $base ) );
         $newExtension = '.' . \ltrim( $newExtension, '.' );
-        $result = $folder
-                  . static::GetNameWithoutExtension( $file, $doubleExtension )
-                  . $newExtension;
+        $result       = $folder
+                      . static::GetNameWithoutExtension( $file, $doubleExtension )
+                      . $newExtension;
 
         if ( $handle && \file_exists( $file ) )
         {
@@ -1555,6 +1474,47 @@ class File
     #endregion
 
     #endregion
+
+
+    private function checkReadAccess() : bool
+    {
+
+        if ( false === $this->isOpen() )
+        {
+            return false;
+        }
+
+        if ( false === $this->hasReadAccess() )
+        {
+            throw FileAccessException::Read(
+                $this->file,
+                \sprintf( 'Current mode of opened file is "%s" and not read!', $this->access->toString() )
+            );
+        }
+
+        return true;
+
+    }
+
+    private function checkWriteAccess() : bool
+    {
+
+        if ( false === $this->isOpen() )
+        {
+            return false;
+        }
+
+        if ( FALSE === $this->hasWriteAccess() )
+        {
+            throw FileAccessException::Write(
+                $this->file,
+                \sprintf( 'Current mode of opened file is "%s" and not write!', $this->access->toString() )
+            );
+        }
+
+        return true;
+
+    }
 
 
 }

@@ -3,6 +3,8 @@
 ## Version 0.6.4 `2026-11-16`
 
 * Change dependency of Niirrty.Core v0.6 to 0.6.4
+* Remove ACCESS_* constants and replace it with new FileAccess enum.
+* Fix some bugs with nullable Params
 
 ## Version 0.6.1 `2024-02-16`
 

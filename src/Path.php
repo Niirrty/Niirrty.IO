@@ -1,10 +1,10 @@
 <?php
 /**
  * @author     Ni Irrty <niirrty+code@gmail.com>
- * @copyright  © 2017-2021, Niirrty
+ * @copyright  © 2017-2026, Niirrty
  * @package    Niirrty\IO
  * @since      2017-11-01
- * @version    0.5.0
+ * @version    0.6.4
  */
 
 
@@ -26,11 +26,12 @@ class Path
     #region // - - -   P U B L I C   S T A T I C   F I E L D S   - - - - - - - - - - - - - - - - - - -
 
     /**
-     * This directory separator is not used by current system.
+     * This directory separator is not used by current system. (e.G. / on Windows or \ on linux or mac) Is NULL if not initialized.
+     * Get initialized by static method calls
      *
      * @var string
      */
-    public static string $NoFolderSeparator;
+    public static ?string $NoFolderSeparator = null;
 
     #endregion
 
@@ -56,7 +57,7 @@ class Path
      *
      * @return string
      */
-    public static function Combine( string $basePath, string $next1, string $next2 = null ): string
+    public static function Combine( string $basePath, string $next1, ?string $next2 = null ): string
     {
 
         if ( empty( $next2 ) )
@@ -115,12 +116,12 @@ class Path
     public static function Normalize( string $path ): string
     {
 
-        $isWin = '\\' === DIRECTORY_SEPARATOR;
         if ( empty( static::$NoFolderSeparator ) )
         {
-            static::$NoFolderSeparator = $isWin ? '/' : '\\';
+            static::$NoFolderSeparator = IS_WIN ? '/' : '\\';
         }
-        $tmpPath = ( $isWin
+
+        $tmpPath = ( IS_WIN
             ? \trim(
                 \str_replace(
                     static::$NoFolderSeparator,
@@ -145,6 +146,7 @@ class Path
             \DIRECTORY_SEPARATOR,
             $tmpPath
         );
+
     }
 
     /**
@@ -164,7 +166,7 @@ class Path
         }
         if ( $dependToOS )
         {
-            if ( !\IS_WIN )
+            if ( false === \IS_WIN )
             {
                 return $path[ 0 ] == '/';
             }
@@ -223,7 +225,7 @@ class Path
      *
      * @return string|array
      */
-    public static function GetPathinfo( string $path, int|string $infoType = null ): array|string
+    public static function GetPathinfo( string $path, int|string|null $infoType = null ): array|string
     {
 
         $infos = [ 'dirname' => '', 'basename' => '', 'extension' => '', 'filename' => '' ];
